@@ -1,0 +1,47 @@
+plugins {
+    id('java-library')
+    id 'com.github.johnrengelman.shadow' version '7.0.0' // 请使用最新版本
+}
+
+dependencies {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    def androidJarDir = properties.getProperty('android.dir')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    compileOnly files(androidJarDir)
+    implementation 'org.nanohttpd:nanohttpd:2.3.1'
+    implementation 'com.github.briandilley.jsonrpc4j:jsonrpc4j:1.5.0'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.5.3'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.5.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.5.3'
+}
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+shadowJar {
+    manifest {
+        attributes 'Main-Class': 'com.github.uiautomator.stub.Stub'
+    }
+}
+
+task packJar(type: Copy, dependsOn: shadowJar) {
+    delete 'release/agent-all.jar'
+    from('build/libs/')
+    into('release/')
+    include("agent-all.jar")
+    rename("agent-all.jar", "agent.jar")
+}
+
+task packExeJar(type: Exec, dependsOn: packJar) {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    def androidJarDir = properties.getProperty('android.dir')
+    executable 'bash'
+    args "-c", "d8 --output release/uiautomator.jar release/agent.jar --lib $androidJarDir"
+}
+
+task packFinalJar(type: Copy, dependsOn: packExeJar) {
+    delete 'release/agent.jar'
+}

@@ -1,2 +1,6 @@
 include ':permission'
 include ':app'
+include ':automator'
+include ':server'
+include ':testjar'
+include ':agent'
