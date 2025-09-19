@@ -18,6 +18,17 @@ $ ./gradlew build
 $ ./gradlew packageDebugAndroidTest
 ```
 
+- Build jar
+```bash
+$ # PC端
+$ ./gradlew packFinalJar
+$ adb push agent/release/uiautomator.jar /data/local/tmp
+$ adb push agent/release/StartUiServer.sh /data/local/tmp
+$ # 手机端
+$ chmod 0755 /data/local/tmp/StartUiServer.sh
+$ ./start.sh
+```
+
 - Run the jsonrpc server on Android device
 
 ```bash
