@@ -29,6 +29,7 @@ import com.github.uiautomator.stub.Log;
 import com.android.uiautomator.testrunner.UiAutomatorTestCase;
 //import android.support.test.uiautomator.UiDevice;
 import com.android.uiautomator.core.UiDevice;
+
 import android.support.test.uiautomator.UiObjectNotFoundException;
 
 import android.app.Instrumentation;
@@ -55,7 +56,7 @@ public class StubJar extends UiAutomatorTestCase {
         System.out.println("hello UiAutomatorTestCase");
     }
 
-    public void initAutomator() throws IOException {
+    public void initAutomator() throws IOException, InterruptedException {
         Log.d("init automator");
         UiDevice uiDevice = getUiDevice();
         uiDevice.pressHome();
@@ -63,23 +64,29 @@ public class StubJar extends UiAutomatorTestCase {
 //        FakeInstrumentationRegistry.setInstrumentation(this.instrumentation);
 //        Log.d("Get Instrument!!");
 //        UiDevice.getInstance(this.instrumentation);
+
+
 //        JsonRpcServer jrs = new JsonRpcServer(new ObjectMapper(), new AutomatorServiceImpl(), AutomatorService.class);
-//        jrs.setShouldLogInvocationErrors(true);
-//        jrs.setErrorResolver(new ErrorResolver() {
-//            @Override
-//            public JsonError resolveError(Throwable throwable, Method method, List<JsonNode> list) {
-//                String data = throwable.getMessage();
-//                if (!throwable.getClass().equals(UiObjectNotFoundException.class)) {
-//                    throwable.printStackTrace();
-//                    StringWriter sw = new StringWriter();
-//                    throwable.printStackTrace(new PrintWriter(sw));
-//                    data = sw.toString();
-//                }
-//                return new JsonError(CUSTOM_ERROR_CODE, throwable.getClass().getName(), data);
-//            }
-//        });
-//        server.route("/jsonrpc/0", jrs);
-//        server.start();
+        JsonRpcServer jrs = new JsonRpcServer(new ObjectMapper(), new TestServiceImpl(), TestService.class);
+        jrs.setShouldLogInvocationErrors(true);
+        jrs.setErrorResolver(new ErrorResolver() {
+            @Override
+            public JsonError resolveError(Throwable throwable, Method method, List<JsonNode> list) {
+                String data = throwable.getMessage();
+                if (!throwable.getClass().equals(UiObjectNotFoundException.class)) {
+                    throwable.printStackTrace();
+                    StringWriter sw = new StringWriter();
+                    throwable.printStackTrace(new PrintWriter(sw));
+                    data = sw.toString();
+                }
+                return new JsonError(CUSTOM_ERROR_CODE, throwable.getClass().getName(), data);
+            }
+        });
+        server.route("/jsonrpc/0", jrs);
+        server.start();
+        while (server.isAlive()) {
+            Thread.sleep(500);
+        }
     }
 
     public void testUIAutomatorStub() throws InterruptedException {
@@ -88,7 +95,7 @@ public class StubJar extends UiAutomatorTestCase {
         try {
             this.initAutomator();
         } catch (Exception exception) {
-            Log.e(" exception.getMessage()");
+            Log.e(" exception.getMessage()" + exception.getMessage());
             return;
         }
 
