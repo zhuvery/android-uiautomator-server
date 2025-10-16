@@ -24,7 +24,7 @@
 package com.github.uiautomator.stub;
 
 import androidx.test.InstrumentationRegistry;
-import androidx.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiDevice;
 
 import com.googlecode.jsonrpc4j.JsonRpcServer;
 

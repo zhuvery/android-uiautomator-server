@@ -13,9 +13,7 @@ import android.view.accessibility.AccessibilityWindowInfo;
 import androidx.annotation.RequiresApi;
 import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.util.Traces;
-import androidx.test.uiautomator.util.Traces.Section;
+import android.support.test.uiautomator.UiDevice;
 
 import org.xmlpull.v1.XmlSerializer;
 

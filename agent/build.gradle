@@ -9,6 +9,7 @@ dependencies {
     def androidJarDir = properties.getProperty('android.dir')
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     compileOnly files(androidJarDir)
+    compileOnly files("compileOnlyLibs/uiautomatorImp.jar")
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
     implementation 'com.github.briandilley.jsonrpc4j:jsonrpc4j:1.5.0'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.5.3'
@@ -22,7 +23,8 @@ java {
 
 shadowJar {
     manifest {
-        attributes 'Main-Class': 'com.github.uiautomator.stub.Stub'
+//        attributes 'Main-Class': 'com.github.uiautomator.stub.Stub' //app_process 入口
+        attributes 'Main-Class': 'com.github.uiautomator.stub.StubJar' //test入口
     }
 }
 

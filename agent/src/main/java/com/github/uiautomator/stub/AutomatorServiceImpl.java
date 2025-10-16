@@ -39,22 +39,23 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.uiautomator.Configurator;
-import androidx.test.uiautomator.Direction;
-import androidx.test.uiautomator.StaleObjectException;
-import androidx.test.uiautomator.UiCollection;
-import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.UiObject;
-import androidx.test.uiautomator.UiObject2;
-import androidx.test.uiautomator.UiObjectNotFoundException;
-import androidx.test.uiautomator.UiScrollable;
-import androidx.test.uiautomator.UiSelector;
-import androidx.test.uiautomator.Until;
 
-//import com.github.uiautomator.ToastHelper;
+import android.support.test.uiautomator.Configurator;
+import android.support.test.uiautomator.Direction;
+import android.support.test.uiautomator.StaleObjectException;
+import android.support.test.uiautomator.UiCollection;
+import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject;
+import android.support.test.uiautomator.UiObject2;
+import android.support.test.uiautomator.UiObjectNotFoundException;
+import android.support.test.uiautomator.UiScrollable;
+import android.support.test.uiautomator.UiSelector;
+import android.support.test.uiautomator.Until;
+
 import com.github.uiautomator.exceptions.NotImplementedException;
 import com.github.uiautomator.stub.watcher.ClickUiObjectWatcher;
 import com.github.uiautomator.stub.watcher.PressKeysWatcher;
+import com.github.uiautomator.stub.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -170,16 +171,10 @@ public class AutomatorServiceImpl implements AutomatorService {
 
     @Override
     public boolean makeToast(final String text, final int duration) {
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-//                todo 需要获取intent才能showtoast
-//                ToastHelper.makeText(mInstrumentation.getTargetContext(), text, duration).show();
-            }
-        });
+        Log.d("ignore makeToast");
         return true;
     }
+
 
     @Override
     public String getLastToast(long cacheDuration) {
@@ -293,21 +288,22 @@ public class AutomatorServiceImpl implements AutomatorService {
 
     @Override
     public String dumpWindowHierarchy(boolean compressed, int maxDepth) {
-        device.setCompressedLayoutHierarchy(compressed);
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try {
-            AccessibilityNodeInfoDumper.dumpWindowHierarchy(device, os, maxDepth);
-            // device.dumpWindowHierarchy(os);
-            return os.toString("UTF-8");
-        } catch (IOException e) {
-            Log.d("dumpWindowHierarchy got IOException: " + e);
-        } finally {
-            try {
-                os.close();
-            } catch (IOException e) {
-                // ignore
-            }
-        }
+        // todo to fill this method with correct codes
+//        device.setCompressedLayoutHierarchy(compressed);
+//        ByteArrayOutputStream os = new ByteArrayOutputStream();
+//        try {
+//            AccessibilityNodeInfoDumper.dumpWindowHierarchy(device, os, maxDepth);
+//            // device.dumpWindowHierarchy(os);
+//            return os.toString("UTF-8");
+//        } catch (IOException e) {
+//            Log.d("dumpWindowHierarchy got IOException: " + e);
+//        } finally {
+//            try {
+//                os.close();
+//            } catch (IOException e) {
+//                // ignore
+//            }
+//        }
 
         return null;
     }

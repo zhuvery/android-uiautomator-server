@@ -26,8 +26,8 @@ package com.github.uiautomator.stub.watcher;
 import android.os.RemoteException;
 import androidx.test.InstrumentationRegistry;
 import android.view.KeyEvent;
-import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.UiSelector;
+import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiSelector;
 import com.github.uiautomator.stub.Log;
 
 /**
