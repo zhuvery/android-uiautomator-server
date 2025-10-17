@@ -25,11 +25,8 @@ package com.github.uiautomator.stub;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.uiautomator.stub.Log;
 import com.android.uiautomator.testrunner.UiAutomatorTestCase;
-//import android.support.test.uiautomator.UiDevice;
-import com.android.uiautomator.core.UiDevice;
-
+//import com.android.uiautomator.core.UiDevice; // 旧版本的UiDevice
 import android.support.test.uiautomator.UiObjectNotFoundException;
 
 import android.app.Instrumentation;
@@ -56,18 +53,17 @@ public class StubJar extends UiAutomatorTestCase {
         System.out.println("hello UiAutomatorTestCase");
     }
 
-    public void initAutomator() throws IOException, InterruptedException {
+    public void initAutomator() throws IOException {
         Log.d("init automator");
-        UiDevice uiDevice = getUiDevice();
-        uiDevice.pressHome();
-//        this.instrumentation = new FakeInstrument(uiDevice);
+        com.android.uiautomator.core.UiDevice oldUiDevice = getUiDevice();
+        Instrumentation instrumentation = new FakeInstrument(oldUiDevice);
 //        FakeInstrumentationRegistry.setInstrumentation(this.instrumentation);
 //        Log.d("Get Instrument!!");
 //        UiDevice.getInstance(this.instrumentation);
 
 
 //        JsonRpcServer jrs = new JsonRpcServer(new ObjectMapper(), new AutomatorServiceImpl(), AutomatorService.class);
-        JsonRpcServer jrs = new JsonRpcServer(new ObjectMapper(), new TestServiceImpl(), TestService.class);
+        JsonRpcServer jrs = new JsonRpcServer(new ObjectMapper(), new TestServiceImpl(oldUiDevice, instrumentation), TestService.class);
         jrs.setShouldLogInvocationErrors(true);
         jrs.setErrorResolver(new ErrorResolver() {
             @Override
@@ -84,18 +80,19 @@ public class StubJar extends UiAutomatorTestCase {
         });
         server.route("/jsonrpc/0", jrs);
         server.start();
-        while (server.isAlive()) {
-            Thread.sleep(500);
-        }
     }
 
-    public void testUIAutomatorStub() throws InterruptedException {
+    public void testUIAutomatorStub() {
         Log.d("start new uiautomator....");
-        System.out.println("start new uiautomator....");
+        System.out.println("start new uiautomator...");
         try {
             this.initAutomator();
+            while (server.isAlive()) {
+                Log.d("server is still alive...");
+                Thread.sleep(500);
+            }
         } catch (Exception exception) {
-            Log.e(" exception.getMessage()" + exception.getMessage());
+            Log.e(" run exception|" + exception.getMessage());
             return;
         }
 

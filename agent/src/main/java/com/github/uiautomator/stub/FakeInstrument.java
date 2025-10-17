@@ -3,9 +3,8 @@ package com.github.uiautomator.stub;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.Instrumentation;
 import android.app.UiAutomation;
-import android.util.Log;
 
-import com.android.uiautomator.core.UiDevice;
+import com.android.uiautomator.core.UiDevice; //旧的UiDevices
 
 import java.lang.reflect.Field;
 
@@ -26,7 +25,7 @@ public class FakeInstrument extends Instrumentation {
         this.uiAutomatorBridge = ReflectWrapper.getValue("mUiAutomationBridge", this.uiDevice);
         Field[] arrayOfField = this.uiAutomatorBridge.getClass().getSuperclass().getDeclaredFields();
         String str = null;
-        Log.v("mytest", "Find UiAutomationBridge");
+        Log.d("Find UiAutomationBridge");
         int j = arrayOfField.length;
         int i = 0;
         while (true) {
@@ -44,9 +43,9 @@ public class FakeInstrument extends Instrumentation {
                 } catch (IllegalAccessException illegalAccessException) {
                     illegalAccessException.printStackTrace();
                 }
-                Log.v("mytest", str1 + "  " + field1.getName());
+                Log.d(str1 + "  " + field1.getName());
                 if (str1.equals("android.app.UiAutomation")) {
-                    Log.v("mytest", "Find android.app.UiAutomation");
+                    Log.d("Find android.app.UiAutomation");
                     field = field1;
                 } else {
                     i++;
@@ -67,7 +66,7 @@ public class FakeInstrument extends Instrumentation {
                 accessibilityServiceInfo.eventTypes ^= 0x401000;
                 uiAutomation1 = uiAutomation;
                 uiAutomation2 = uiAutomation;
-                Log.v("mytest", "Accessibility eventTypes is " + accessibilityServiceInfo.eventTypes);
+                Log.d("Accessibility eventTypes is " + accessibilityServiceInfo.eventTypes);
                 uiAutomation1 = uiAutomation;
                 uiAutomation2 = uiAutomation;
                 accessibilityServiceInfo.flags |= 0x2;
@@ -76,7 +75,7 @@ public class FakeInstrument extends Instrumentation {
                 accessibilityServiceInfo.flags |= 0x10;
                 uiAutomation1 = uiAutomation;
                 uiAutomation2 = uiAutomation;
-                Log.v("mytest", "Accessibility Flag change to " + accessibilityServiceInfo.flags);
+                Log.d("Accessibility Flag change to " + accessibilityServiceInfo.flags);
                 uiAutomation1 = uiAutomation;
                 uiAutomation2 = uiAutomation;
                 uiAutomation.setServiceInfo(accessibilityServiceInfo);
@@ -92,12 +91,14 @@ public class FakeInstrument extends Instrumentation {
     }
 
     public UiAutomation getUiAutomation() {
+        Log.d("start getUiAutomation");
         if (this.mUiAutomation == null)
             this.mUiAutomation = reflectUiAutomation();
         return this.mUiAutomation;
     }
 
     public UiAutomation getUiAutomation(int paramInt) {
+        Log.d("start getUiAutomation with param");
         if (this.mUiAutomation == null)
             this.mUiAutomation = reflectUiAutomation();
         return this.mUiAutomation;

@@ -26,7 +26,9 @@ package com.github.uiautomator.stub;
 import android.os.RemoteException;
 
 import androidx.test.platform.app.InstrumentationRegistry;
+
 import android.support.test.uiautomator.UiDevice;
+
 
 public class DeviceInfo {
     private String _currentPackageName;
@@ -45,9 +47,29 @@ public class DeviceInfo {
         return new DeviceInfo();
     }
 
+    public static DeviceInfo getDeviceInfo(com.android.uiautomator.core.UiDevice oldUiDevice) {
+        return new DeviceInfo(oldUiDevice);
+    }
+
+    private DeviceInfo(com.android.uiautomator.core.UiDevice oldUiDevice) {
+        this._currentPackageName = oldUiDevice.getCurrentPackageName();
+        this._displayWidth = oldUiDevice.getDisplayWidth();
+        this._displayHeight = oldUiDevice.getDisplayHeight();
+        this._displayRotation = oldUiDevice.getDisplayRotation();
+        this._productName = oldUiDevice.getProductName();
+        this._naturalOrientation = oldUiDevice.isNaturalOrientation();
+        this._displaySizeDpX = (oldUiDevice.getDisplaySizeDp()).x;
+        this._displaySizeDpY = (oldUiDevice.getDisplaySizeDp()).y;
+        try {
+            this._screenOn = oldUiDevice.isScreenOn();
+        } catch (RemoteException remoteException) {
+            remoteException.printStackTrace();
+            Log.e(remoteException.getMessage());
+        }
+    }
+
     private DeviceInfo() {
         this._sdkInt = android.os.Build.VERSION.SDK_INT;
-
         UiDevice ud = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         this._currentPackageName = ud.getCurrentPackageName();
         this._displayWidth = ud.getDisplayWidth();
