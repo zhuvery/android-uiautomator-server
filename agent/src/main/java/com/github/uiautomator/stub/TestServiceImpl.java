@@ -4,11 +4,15 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.app.Instrumentation;
 import android.app.UiAutomation;
+import android.support.test.uiautomator.UiObjectNotFoundException;
 
 import com.github.uiautomator.exceptions.UiAutomator2Exception;
 import com.github.uiautomator.tools.ReflectionUtils;
 import com.github.uiautomator.tools.XMLHierarchy;
 import com.github.uiautomator.stub.Device;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 //import android.support.test.uiautomator.UiDevice; //新的UiDevices
 
 public class TestServiceImpl implements TestService {
@@ -66,16 +70,25 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public String dumpWindowHierarchy(boolean compressed, int maxDepth) {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
-            ReflectionUtils.clearAccessibilityCache();
-            XMLHierarchy.getRootAccessibilityNode();
-//            return XMLHierarchy.getRawStringHierarchyUsingRoots(XMLHierarchy.getRootAccessibilityNode(), this.oldUiDevice);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-//            this.lastRoot = null;
-            throw new UiAutomator2Exception(exception);
+            AccessibilityNodeInfoDumper.dumpWindowHierarchy(XMLHierarchy.getRootAccessibilityNode(), os, this.oldUiDevice, maxDepth);
+            return os.toString("UTF-8");
+        } catch (Exception e) {
+            Log.d("dumpWindowHierarchy got Exception: " + e);
+            throw new UiAutomator2Exception(e);
+        } finally {
+            try {
+                os.close();
+            } catch (IOException e) {
+                Log.d("dumpWindowHierarchy got Exception: " + e + "but ignore it");
+                // ignore
+            }
         }
-        return null;
+    }
+
+    public String getText(Selector paramSelector) throws UiObjectNotFoundException {
+        return this.uiDevice.findObject(paramSelector.toUiSelector()).getText();
     }
 
 }

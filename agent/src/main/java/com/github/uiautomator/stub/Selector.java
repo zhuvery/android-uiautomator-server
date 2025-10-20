@@ -89,7 +89,8 @@ public class Selector {
     public static final long MASK_INDEX = 0x800000;
     public static final long MASK_INSTANCE = 0x01000000;
 
-    private UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    private UiDevice device = Device.getInstance().getUiDevice(); // use device singleton to get uidevice
+//    private UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
 
     public UiSelector toUiSelector() {
         UiSelector s = new UiSelector();

@@ -1,6 +1,5 @@
 package com.github.uiautomator.stub;
 
-import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.UiAutomation;
 import android.os.Build;
 import android.util.Log;
@@ -13,7 +12,10 @@ import android.view.accessibility.AccessibilityWindowInfo;
 import androidx.annotation.RequiresApi;
 import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
+
 import android.support.test.uiautomator.UiDevice;
+
+import com.github.uiautomator.exceptions.UiAutomator2Exception;
 
 import org.xmlpull.v1.XmlSerializer;
 
@@ -33,6 +35,28 @@ class AccessibilityNodeInfoDumper {
     };
 
     private AccessibilityNodeInfoDumper() {
+    }
+
+    public static void dumpWindowHierarchy(AccessibilityNodeInfo[] accessibilityNodeInfos, OutputStream out, com.android.uiautomator.core.UiDevice paramUiDevice, int maxDepth) throws UiAutomator2Exception, IOException {
+        XmlSerializer serializer = Xml.newSerializer();
+        serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+        serializer.setOutput(out, "UTF-8");
+
+        serializer.startDocument("UTF-8", true);
+        serializer.startTag("", "hierarchy"); // TODO(allenhair): Should we use a namespace?
+        if (Build.VERSION.SDK_INT >= 18) {
+            int i = -1;
+            if (paramUiDevice.getDisplayWidth() < paramUiDevice.getDisplayHeight()) {
+                i = 0;
+            } else {
+                i = 1;
+            }
+            serializer.attribute("", "rotation", Integer.toString(i));
+        }
+        for (AccessibilityNodeInfo root : accessibilityNodeInfos) {
+            dumpNodeRec(root, serializer, 0, paramUiDevice.getDisplayWidth(),
+                    paramUiDevice.getDisplayHeight(), maxDepth);
+        }
     }
 
     public static void dumpWindowHierarchy(UiDevice device, OutputStream out, int maxDepth) throws IOException {

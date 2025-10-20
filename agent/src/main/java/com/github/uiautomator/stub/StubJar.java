@@ -88,9 +88,9 @@ public class StubJar extends UiAutomatorTestCase {
         try {
             this.initAutomator();
             while (server.isAlive()) {
-                Log.d("server is still alive...");
                 Thread.sleep(500);
             }
+            Log.e("server is dead !!!");
         } catch (Exception exception) {
             Log.e(" run exception|" + exception.getMessage());
             return;
