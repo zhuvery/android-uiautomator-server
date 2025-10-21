@@ -10,6 +10,7 @@ import com.github.uiautomator.stub.FakeInstrument;
 import com.github.uiautomator.stub.FakeInstrumentationRegistry;
 import com.github.uiautomator.stub.Log;
 import com.github.uiautomator.nuiautomator.QueryController;
+import com.github.uiautomator.stub.TouchController;
 import com.github.uiautomator.tools.ReflectionUtils;
 
 import android.support.test.uiautomator.UiSelector;
@@ -24,6 +25,8 @@ public class NDevices {
     private QueryController queryController = null;
 
     private AccessibilityNodeInfo lastUiInfo = null;
+
+    private TouchController touchController = null;
 
     private static NDevices device = null;
 
@@ -42,6 +45,7 @@ public class NDevices {
     public void init(com.android.uiautomator.core.UiDevice u1UiDevice) {
         Instrumentation instrumentation = new FakeInstrument(u1UiDevice);
         FakeInstrumentationRegistry.setInstrumentation(instrumentation);
+        this.touchController = new TouchController(instrumentation);
         this.u1UiDevice = u1UiDevice;
         this.u2UiDevice = android.support.test.uiautomator.UiDevice.getInstance(instrumentation);
         this.u2UiAutomation = instrumentation.getUiAutomation();
@@ -62,6 +66,10 @@ public class NDevices {
 
     public android.support.test.uiautomator.UiDevice getU2UiDevices() {
         return this.u2UiDevice;
+    }
+
+    public TouchController getTouchController() {
+        return this.touchController;
     }
 
     public UiAutomation getU2UiAutomation() {

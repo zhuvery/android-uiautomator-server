@@ -1,11 +1,15 @@
 package com.github.uiautomator.stub;
 
+import android.os.RemoteException;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 
+import com.github.uiautomator.exceptions.NotImplementedException;
 import com.googlecode.jsonrpc4j.JsonRpcError;
 import com.googlecode.jsonrpc4j.JsonRpcErrors;
 
 public interface TestService {
+
+    final static int ERROR_CODE_BASE = -32000;
 
     boolean playSound(String path);
 
@@ -15,8 +19,6 @@ public interface TestService {
 
     String dumpAllWindowHierarchy(boolean paramBoolean);
 
-    String dumpWindowHierarchy();
-
     String dumpWindowHierarchy(boolean compressed);
 
     String dumpWindowHierarchy(boolean compressed, int maxDepth);
@@ -24,5 +26,135 @@ public interface TestService {
     @JsonRpcErrors({@JsonRpcError(code = -32002, exception = UiObjectNotFoundException.class)})
     String getText(Selector paramSelector) throws UiObjectNotFoundException;
 
-    String testApi();
+    boolean click(int x, int y);
+
+    public boolean click(int x, int y, long milliseconds);
+
+    @JsonRpcErrors({@JsonRpcError(exception = NotImplementedException.class, code = ERROR_CODE_BASE - 3)})
+    boolean drag(int startX, int startY, int endX, int endY, int steps) throws NotImplementedException;
+
+    boolean swipe(int startX, int startY, int endX, int endY, int steps);
+
+    /**
+     * Performs a swipe between points in the point array
+     *
+     * @param segments     the point array
+     * @param segmentSteps steps to inject between two points, each step lasting 5ms
+     */
+    boolean swipePoints(int[] segments, int segmentSteps);
+
+    /**
+     * Inject a low-level InputEvent (MotionEvent) to the input stream
+     *
+     * @param action    MotionEvent.ACTION_*
+     * @param x         x coordinate
+     * @param y         y coordinate
+     * @param metaState any meta info
+     */
+    boolean injectInputEvent(int action, float x, float y, int metaState);
+
+    /**
+     * Take a screenshot of current window and store it as PNG The screenshot is adjusted per screen rotation
+     *
+     * @param filename where the PNG should be written to
+     * @param scale    scale the screenshot down if needed; 1.0f for original size
+     * @param quality  quality of the PNG compression; range: 0-100
+     * @return the file name of the screenshot. null if failed.
+     * @throws NotImplementedException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = NotImplementedException.class, code = ERROR_CODE_BASE - 3)})
+    String takeScreenshot(String filename, float scale, int quality) throws NotImplementedException;
+
+    /**
+     * Take a screenshot of current window and store it as JPEG The screenshot is adjusted per screen rotation
+     *
+     * @param scale
+     * @param quality
+     * @return base64 encoded image data
+     * @throws NotImplementedException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = NotImplementedException.class, code = ERROR_CODE_BASE - 3)})
+    public String takeScreenshot(float scale, int quality) throws NotImplementedException;
+
+    /**
+     * Disables the sensors and freezes the device rotation at its current rotation state, or enable it.
+     *
+     * @param freeze true to freeze the rotation, false to unfreeze the rotation.
+     * @throws RemoteException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = RemoteException.class, code = ERROR_CODE_BASE - 1)})
+    void freezeRotation(boolean freeze) throws RemoteException;  // freeze or unfreeze rotation, see also unfreezeRotation()
+
+    @JsonRpcErrors({@JsonRpcError(exception = RemoteException.class, code = ERROR_CODE_BASE - 1), @JsonRpcError(exception = NotImplementedException.class, code = ERROR_CODE_BASE - 3)})
+    void setOrientation(String dir) throws RemoteException, NotImplementedException;
+
+    /**
+     * Opens the notification shade.
+     *
+     * @return true if successful, else return false
+     * @throws NotImplementedException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = NotImplementedException.class, code = ERROR_CODE_BASE - 3)})
+    boolean openNotification() throws NotImplementedException;
+
+    /**
+     * Opens the Quick Settings shade.
+     *
+     * @return true if successful, else return false
+     * @throws NotImplementedException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = NotImplementedException.class, code = ERROR_CODE_BASE - 3)})
+    boolean openQuickSettings() throws NotImplementedException;
+
+    /**
+     * Simulates a short press using key name.
+     *
+     * @param key possible key name is home, back, left, right, up, down, center, menu, search, enter, delete(or del), recent(recent apps), volume_up, volume_down, volume_mute, camera, power
+     * @return true if successful, else return false
+     * @throws RemoteException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = RemoteException.class, code = ERROR_CODE_BASE - 1)})
+    boolean pressKey(String key) throws RemoteException;
+
+    /**
+     * Simulates a short press using a key code. See KeyEvent.
+     *
+     * @param keyCode the key code of the event.
+     * @return true if successful, else return false
+     */
+    boolean pressKeyCode(int keyCode);
+
+    /**
+     * Simulates a short press using a key code. See KeyEvent.
+     *
+     * @param keyCode   the key code of the event.
+     * @param metaState an integer in which each bit set to 1 represents a pressed meta key
+     * @return true if successful, else return false
+     */
+    boolean pressKeyCode(int keyCode, int metaState);
+
+    /**
+     * This method simulates pressing the power button if the screen is OFF else it does nothing if the screen is already ON. If the screen was OFF and it just got turned ON, this method will insert a 500ms delay to allow the device time to wake up and accept input.
+     *
+     * @throws RemoteException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = RemoteException.class, code = ERROR_CODE_BASE - 1)})
+    void wakeUp() throws RemoteException;
+
+    /**
+     * This method simply presses the power button if the screen is ON else it does nothing if the screen is already OFF.
+     *
+     * @throws RemoteException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = RemoteException.class, code = ERROR_CODE_BASE - 1)})
+    void sleep() throws RemoteException;
+
+    /**
+     * Checks the power manager if the screen is ON.
+     *
+     * @return true if the screen is ON else false
+     * @throws RemoteException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = RemoteException.class, code = ERROR_CODE_BASE - 1)})
+    boolean isScreenOn() throws RemoteException;
 }
