@@ -16,6 +16,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import android.support.test.uiautomator.UiDevice;
 
 import com.github.uiautomator.exceptions.UiAutomator2Exception;
+import com.github.uiautomator.nuiautomator.NDevices;
 
 import org.xmlpull.v1.XmlSerializer;
 
@@ -37,25 +38,22 @@ class AccessibilityNodeInfoDumper {
     private AccessibilityNodeInfoDumper() {
     }
 
-    public static void dumpWindowHierarchy(AccessibilityNodeInfo[] accessibilityNodeInfos, OutputStream out, com.android.uiautomator.core.UiDevice paramUiDevice, int maxDepth) throws UiAutomator2Exception, IOException {
+    public static void dumpWindowHierarchy(AccessibilityNodeInfo[] accessibilityNodeInfos, OutputStream out, int maxDepth) throws UiAutomator2Exception, IOException {
         XmlSerializer serializer = Xml.newSerializer();
         serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
         serializer.setOutput(out, "UTF-8");
 
         serializer.startDocument("UTF-8", true);
         serializer.startTag("", "hierarchy"); // TODO(allenhair): Should we use a namespace?
+        com.android.uiautomator.core.UiDevice u1UiDevice = NDevices.getInstance().getU1UiDevices();
+        NDevices.getInstance().refreshUI(accessibilityNodeInfos[0]);
         if (Build.VERSION.SDK_INT >= 18) {
-            int i = -1;
-            if (paramUiDevice.getDisplayWidth() < paramUiDevice.getDisplayHeight()) {
-                i = 0;
-            } else {
-                i = 1;
-            }
+            int i = u1UiDevice.getDisplayWidth() > u1UiDevice.getDisplayHeight() ? 1 : 0;
             serializer.attribute("", "rotation", Integer.toString(i));
         }
         for (AccessibilityNodeInfo root : accessibilityNodeInfos) {
-            dumpNodeRec(root, serializer, 0, paramUiDevice.getDisplayWidth(),
-                    paramUiDevice.getDisplayHeight(), maxDepth);
+            dumpNodeRec(root, serializer, 0, u1UiDevice.getDisplayWidth(),
+                    u1UiDevice.getDisplayHeight(), maxDepth);
         }
     }
 

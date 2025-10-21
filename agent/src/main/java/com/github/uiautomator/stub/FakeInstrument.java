@@ -15,7 +15,7 @@ public class FakeInstrument extends Instrumentation {
 
     private UiDevice uiDevice = null;
 
-    FakeInstrument(UiDevice paramUiDevice) {
+    public FakeInstrument(UiDevice paramUiDevice) {
         this.uiDevice = paramUiDevice;
     }
 
@@ -91,14 +91,12 @@ public class FakeInstrument extends Instrumentation {
     }
 
     public UiAutomation getUiAutomation() {
-        Log.d("start getUiAutomation");
         if (this.mUiAutomation == null)
             this.mUiAutomation = reflectUiAutomation();
         return this.mUiAutomation;
     }
 
     public UiAutomation getUiAutomation(int paramInt) {
-        Log.d("start getUiAutomation with param");
         if (this.mUiAutomation == null)
             this.mUiAutomation = reflectUiAutomation();
         return this.mUiAutomation;

@@ -13,6 +13,8 @@ public interface TestService {
 
     DeviceInfo deviceInfo();
 
+    String dumpAllWindowHierarchy(boolean paramBoolean);
+
     String dumpWindowHierarchy();
 
     String dumpWindowHierarchy(boolean compressed);
@@ -21,4 +23,6 @@ public interface TestService {
 
     @JsonRpcErrors({@JsonRpcError(code = -32002, exception = UiObjectNotFoundException.class)})
     String getText(Selector paramSelector) throws UiObjectNotFoundException;
+
+    String testApi();
 }

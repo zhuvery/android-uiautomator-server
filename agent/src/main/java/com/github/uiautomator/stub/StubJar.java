@@ -26,10 +26,10 @@ package com.github.uiautomator.stub;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.android.uiautomator.testrunner.UiAutomatorTestCase;
-//import com.android.uiautomator.core.UiDevice; // 旧版本的UiDevice
+
 import android.support.test.uiautomator.UiObjectNotFoundException;
 
-import android.app.Instrumentation;
+import com.github.uiautomator.nuiautomator.NDevices;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -55,15 +55,10 @@ public class StubJar extends UiAutomatorTestCase {
 
     public void initAutomator() throws IOException {
         Log.d("init automator");
-        com.android.uiautomator.core.UiDevice oldUiDevice = getUiDevice();
-        Instrumentation instrumentation = new FakeInstrument(oldUiDevice);
-//        FakeInstrumentationRegistry.setInstrumentation(this.instrumentation);
-//        Log.d("Get Instrument!!");
-//        UiDevice.getInstance(this.instrumentation);
-
-
+        NDevices nDevices = NDevices.getInstance();
+        nDevices.init(getUiDevice());
 //        JsonRpcServer jrs = new JsonRpcServer(new ObjectMapper(), new AutomatorServiceImpl(), AutomatorService.class);
-        JsonRpcServer jrs = new JsonRpcServer(new ObjectMapper(), new TestServiceImpl(oldUiDevice, instrumentation), TestService.class);
+        JsonRpcServer jrs = new JsonRpcServer(new ObjectMapper(), new TestServiceImpl(nDevices), TestService.class);
         jrs.setShouldLogInvocationErrors(true);
         jrs.setErrorResolver(new ErrorResolver() {
             @Override

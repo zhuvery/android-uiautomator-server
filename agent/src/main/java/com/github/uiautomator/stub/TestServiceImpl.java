@@ -2,34 +2,26 @@ package com.github.uiautomator.stub;
 
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.app.Instrumentation;
-import android.app.UiAutomation;
 import android.support.test.uiautomator.UiObjectNotFoundException;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.github.uiautomator.exceptions.UiAutomator2Exception;
+import com.github.uiautomator.nuiautomator.NDevices;
 import com.github.uiautomator.tools.ReflectionUtils;
 import com.github.uiautomator.tools.XMLHierarchy;
-import com.github.uiautomator.stub.Device;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-//import android.support.test.uiautomator.UiDevice; //新的UiDevices
+
 
 public class TestServiceImpl implements TestService {
     private final SoundPool soundPool = new SoundPool(100, AudioManager.STREAM_MUSIC, 0);
 
-    private com.android.uiautomator.core.UiDevice oldUiDevice;
-    private android.support.test.uiautomator.UiDevice uiDevice;
-    private Instrumentation instrumentation;
-    private UiAutomation uiAutomation;
+    private NDevices nDevices = null;
 
-    public TestServiceImpl(com.android.uiautomator.core.UiDevice oldUiDevice, Instrumentation fakeInstrument) {
+    public TestServiceImpl(NDevices ndevices) {
         Log.d("constructor TestServiceImpl");
-        this.oldUiDevice = oldUiDevice;
-        this.instrumentation = fakeInstrument;
-        this.uiAutomation = this.instrumentation.getUiAutomation();
-        this.uiDevice = android.support.test.uiautomator.UiDevice.getInstance(fakeInstrument);
-        Device.getInstance().init(this.uiDevice, this.uiAutomation);
+        this.nDevices = ndevices;
         soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
             public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
@@ -55,7 +47,7 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public DeviceInfo deviceInfo() {
-        return DeviceInfo.getDeviceInfo(this.oldUiDevice);
+        return DeviceInfo.getDeviceInfo(this.nDevices.getU1UiDevices());
     }
 
     @Override
@@ -68,11 +60,11 @@ public class TestServiceImpl implements TestService {
         return dumpWindowHierarchy(compressed, 50);
     }
 
-    @Override
-    public String dumpWindowHierarchy(boolean compressed, int maxDepth) {
+    private String commonDumpWindowHierarchy(boolean compressed, int maxDepth, AccessibilityNodeInfo[] accessibilityNodeInfos) {
+        ReflectionUtils.clearAccessibilityCache();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
-            AccessibilityNodeInfoDumper.dumpWindowHierarchy(XMLHierarchy.getRootAccessibilityNode(), os, this.oldUiDevice, maxDepth);
+            AccessibilityNodeInfoDumper.dumpWindowHierarchy(accessibilityNodeInfos, os, maxDepth);
             return os.toString("UTF-8");
         } catch (Exception e) {
             Log.d("dumpWindowHierarchy got Exception: " + e);
@@ -87,8 +79,26 @@ public class TestServiceImpl implements TestService {
         }
     }
 
+    // 这里是把当前界面所有的树都dump出来了
+    @Override
+    public String dumpAllWindowHierarchy(boolean compressed) {
+        // 默认层数是50层
+        return this.commonDumpWindowHierarchy(compressed, 50, XMLHierarchy.getRootAccessibilityNode());
+    }
+
+
+    @Override
+    public String dumpWindowHierarchy(boolean compressed, int maxDepth) {
+
+        return this.commonDumpWindowHierarchy(compressed, maxDepth, XMLHierarchy.getCurstomRootAccessibilityNode());
+    }
+
     public String getText(Selector paramSelector) throws UiObjectNotFoundException {
-        return this.uiDevice.findObject(paramSelector.toUiSelector()).getText();
+        return NDevices.getInstance().getText(paramSelector);
+    }
+
+    public String testApi() {
+        return "test api";
     }
 
 }
