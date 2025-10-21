@@ -157,4 +157,16 @@ public interface TestService {
      */
     @JsonRpcErrors({@JsonRpcError(exception = RemoteException.class, code = ERROR_CODE_BASE - 1)})
     boolean isScreenOn() throws RemoteException;
+
+    /**
+     * Clears the existing text contents in an editable field. The UiSelector of this object must reference a UI element that is editable. When you call this method, the method first sets focus at the start edge of the field. The method then simulates a long-press to select the existing text, and deletes the selected text. If a "Select-All" option is displayed, the method will automatically attempt to use it to ensure full text selection. Note that it is possible that not all the text in the field is selected; for example, if the text contains separators such as spaces, slashes, at symbol etc. Also, not all editable fields support the long-press functionality.
+     *
+     * @param obj the selector of the UiObject.
+     * @throws UiObjectNotFoundException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    void clearTextField(Selector obj) throws UiObjectNotFoundException;
+
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    boolean setText(Selector obj, String text) throws UiObjectNotFoundException;
 }

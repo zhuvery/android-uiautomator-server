@@ -387,4 +387,22 @@ public class TestServiceImpl implements TestService {
     public boolean isScreenOn() throws RemoteException {
         return NDevices.getInstance().getU1UiDevices().isScreenOn();
     }
+
+    @Override
+    public void clearTextField(Selector obj) throws UiObjectNotFoundException {
+        NDevices.getInstance().clearTextField(obj);
+    }
+
+    /**
+     * Sets the text in an editable field, after clearing the field's content. The UiSelector selector of this object must reference a UI element that is editable. When you call this method, the method first simulates a click() on editable field to set focus. The method then clears the field's contents and injects your specified text into the field. If you want to capture the original contents of the field, call getText() first. You can then modify the text and use this method to update the field.
+     *
+     * @param obj  the selector of the UiObject.
+     * @param text string to set
+     * @return true if operation is successful
+     * @throws UiObjectNotFoundException
+     */
+    @Override
+    public boolean setText(Selector obj, String text) throws UiObjectNotFoundException {
+        return NDevices.getInstance().setText(obj, text);
+    }
 }

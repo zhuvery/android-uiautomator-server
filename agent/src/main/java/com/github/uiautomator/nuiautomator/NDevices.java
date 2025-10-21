@@ -2,18 +2,16 @@ package com.github.uiautomator.nuiautomator;
 
 import android.app.Instrumentation;
 import android.app.UiAutomation;
+import android.os.Build;
+import android.os.Bundle;
 import android.view.accessibility.AccessibilityNodeInfo;
-
 
 import com.github.uiautomator.stub.Selector;
 import com.github.uiautomator.stub.FakeInstrument;
 import com.github.uiautomator.stub.FakeInstrumentationRegistry;
 import com.github.uiautomator.stub.Log;
-import com.github.uiautomator.nuiautomator.QueryController;
 import com.github.uiautomator.stub.TouchController;
 import com.github.uiautomator.tools.ReflectionUtils;
-
-import android.support.test.uiautomator.UiSelector;
 
 public class NDevices {
 
@@ -24,11 +22,15 @@ public class NDevices {
 
     private QueryController queryController = null;
 
+    private InteractionController interactionController = null;
+
     private AccessibilityNodeInfo lastUiInfo = null;
 
     private TouchController touchController = null;
 
     private static NDevices device = null;
+
+    private final int API_LEVEL_ACTUAL = Build.VERSION.SDK_INT + ("REL".equals(Build.VERSION.CODENAME) ? 0 : 1);
 
     public static NDevices getInstance() {
         if (device == null) {
@@ -49,11 +51,8 @@ public class NDevices {
         this.u1UiDevice = u1UiDevice;
         this.u2UiDevice = android.support.test.uiautomator.UiDevice.getInstance(instrumentation);
         this.u2UiAutomation = instrumentation.getUiAutomation();
-        this.queryController = new QueryController(
-                ReflectionUtils.getField(
-                        android.support.test.uiautomator.UiDevice.class,
-                        "mQueryController", this.u2UiDevice
-                ));
+        this.queryController = new QueryController(ReflectionUtils.getField(android.support.test.uiautomator.UiDevice.class, "mQueryController", this.u2UiDevice));
+        this.interactionController = new InteractionController(ReflectionUtils.getField(android.support.test.uiautomator.UiDevice.class, "mInteractionController", this.u2UiDevice));
     }
 
     public void refreshUI(AccessibilityNodeInfo accessibilityNodeInfo) {
@@ -80,6 +79,22 @@ public class NDevices {
         return this.queryController;
     }
 
+    public int getApiLevelActual() {
+        return this.API_LEVEL_ACTUAL;
+    }
+
+    private AccessibilityNodeInfo findObject(Selector selector) {
+        Log.d("findObject with lastUiInfo");
+        AccessibilityNodeInfo accessibilityNodeInfo;
+        accessibilityNodeInfo = this.queryController.findNodeInRoot(selector.toUiSelector(), this.lastUiInfo);
+        if (accessibilityNodeInfo != null) {
+            return accessibilityNodeInfo;
+        } else {
+            Log.e("accessibilityNodeInfo is null|cannot getText");
+            return null;
+        }
+    }
+
     public String getText(Selector selector) {
         try {
             if (this.lastUiInfo == null) {
@@ -87,10 +102,7 @@ public class NDevices {
                 return this.u2UiDevice.findObject(selector.toUiSelector()).getText();
             } else {
                 Log.d("find lastUiInfo");
-                AccessibilityNodeInfo accessibilityNodeInfo;
-                accessibilityNodeInfo = this.queryController.findNodeInRoot(
-                        selector.toUiSelector(),
-                        this.lastUiInfo);
+                AccessibilityNodeInfo accessibilityNodeInfo = this.findObject(selector);
                 if (accessibilityNodeInfo != null) {
                     return accessibilityNodeInfo.getText().toString();
                 } else {
@@ -103,5 +115,61 @@ public class NDevices {
             Log.e("getText exception|" + e);
         }
         return "";
+    }
+
+    public boolean setText(Selector selector, String text) {
+        if (this.lastUiInfo == null) {
+            try {
+                return this.u2UiDevice.findObject(selector.toUiSelector()).setText(text);
+            } catch (Exception exception) {
+                Log.e("setText method error:" + exception);
+                return false;
+            }
+        } else {
+            if (text == null)
+                text = "";
+            if (this.API_LEVEL_ACTUAL > 19) {
+                AccessibilityNodeInfo node = this.findObject(selector);
+                if (node == null) {
+                    Log.e("cannot find selector to set null text");
+                    return false;
+                } else {
+                    Bundle args = new Bundle();
+                    args.putCharSequence("ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE", text);
+                    return node.performAction(2097152, args);
+                }
+            }
+            clearTextField(selector);
+            return this.interactionController.sendText(text);
+        }
+    }
+
+    public void clearTextField(Selector selector) {
+        if (this.lastUiInfo == null) {
+            try {
+                this.u2UiDevice.findObject(selector.toUiSelector()).clearTextField();
+            } catch (Exception exception) {
+                Log.e("clearTextField method error:" + exception);
+            }
+        } else {
+            Log.d("find lastUiInfo");
+            AccessibilityNodeInfo node = this.findObject(selector);
+            if (node != null) {
+                CharSequence text = node.getText();
+                if (text != null && text.length() > 0)
+                    if (this.API_LEVEL_ACTUAL > 19) {
+                        this.setText(selector, "");
+                    } else {
+                        Bundle selectionArgs = new Bundle();
+                        selectionArgs.putInt("ACTION_ARGUMENT_SELECTION_START_INT", 0);
+                        selectionArgs.putInt("ACTION_ARGUMENT_SELECTION_END_INT", text.length());
+                        boolean ret = node.performAction(1);
+                        if (!ret) Log.e("ACTION_FOCUS on text field failed.");
+                        ret = node.performAction(131072, selectionArgs);
+                        if (!ret) Log.e("ACTION_SET_SELECTION on text field failed.");
+                        this.interactionController.sendKey(67, 0);
+                    }
+            }
+        }
     }
 }

@@ -24,11 +24,14 @@
 package com.github.uiautomator.stub;
 
 import androidx.test.InstrumentationRegistry;
+
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiSelector;
+
+import com.github.uiautomator.nuiautomator.NDevices;
 
 import java.util.regex.Pattern;
 
@@ -89,7 +92,7 @@ public class Selector {
     public static final long MASK_INDEX = 0x800000;
     public static final long MASK_INSTANCE = 0x01000000;
 
-    private UiDevice device = Device.getInstance().getUiDevice(); // use device singleton to get uidevice
+    private UiDevice device = NDevices.getInstance().getU2UiDevices();
 //    private UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
 
     public UiSelector toUiSelector() {
