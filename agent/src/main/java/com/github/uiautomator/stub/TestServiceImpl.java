@@ -487,6 +487,17 @@ public class TestServiceImpl implements TestService {
         return this.nDevices.dragTo(obj, destX, destY, steps);
     }
 
+    /**
+     * Check if view exists. This methods performs a waitForExists(long) with zero timeout. This basically returns immediately whether the view represented by this UiObject exists or not.
+     *
+     * @param obj the ui object.
+     * @return true if the view represented by this UiObject does exist
+     */
+    @Override
+    public boolean exist(Selector obj) {
+        return this.nDevices.exist(obj);
+    }
+
     @Override
     public void testApi() {
         Log.d("test api111:" + this.nDevices.getU1UiDevices().getDisplayWidth());

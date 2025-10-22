@@ -15,7 +15,7 @@ import com.github.uiautomator.stub.TouchController;
 import com.github.uiautomator.tools.ReflectionUtils;
 import com.github.uiautomator.tools.AccessibilityNodeInfoHelper;
 
-import androidx.annotation.NonNull;
+import android.support.test.uiautomator.Until;
 
 public class NDevices {
 
@@ -410,4 +410,15 @@ public class NDevices {
         return rect != null ? this.dragTo(rect, destX, destY, steps) : this.dragTo(node, destX, destY, steps);
     }
 
+    public boolean exist(Selector selector) {
+        if (this.lastUiInfo == null) {
+            if ((selector.getChildOrSibling()).length == 0 && selector.toBySelector() != null) {
+                return ((Boolean) this.u2UiDevice.wait(Until.hasObject(selector.toBySelector()), 0L)).booleanValue();
+            }
+            return this.u2UiDevice.findObject(selector.toUiSelector()).exists();
+        } else {
+            AccessibilityNodeInfo node = this.findObject(selector);
+            return node != null;
+        }
+    }
 }
