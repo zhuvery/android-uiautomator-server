@@ -24,11 +24,15 @@
 package com.github.uiautomator.stub;
 
 import androidx.test.InstrumentationRegistry;
+
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
+import android.view.accessibility.AccessibilityNodeInfo;
+
+import com.github.uiautomator.nuiautomator.NDevices;
 
 public class ObjInfo {
 
@@ -40,198 +44,232 @@ public class ObjInfo {
         return new ObjInfo(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()).findObject(selector));
     }
 
-	public static final ObjInfo getObjInfo(UiObject2 obj) {
-		return new ObjInfo(obj);
-	}
+    public static final ObjInfo getObjInfo(AccessibilityNodeInfo node) throws UiObjectNotFoundException {
+        return new ObjInfo(node);
+    }
 
-	private ObjInfo(UiObject obj) throws UiObjectNotFoundException {
-		this._bounds = Rect.from(obj.getBounds());
-		this._checkable = obj.isCheckable();
-		this._checked = obj.isChecked();
-		this._childCount = obj.getChildCount();
-		this._clickable = obj.isClickable();
-		this._contentDescription = obj.getContentDescription();
-		this._enabled = obj.isEnabled();
-		this._focusable = obj.isFocusable();
-		this._focused = obj.isFocused();
-		this._longClickable = obj.isLongClickable();
-		this._packageName = obj.getPackageName();
-		this._scrollable = obj.isScrollable();
-		this._selected = obj.isSelected();
-		this._text = obj.getText();
+    public static final ObjInfo getObjInfo(UiObject2 obj) {
+        return new ObjInfo(obj);
+    }
+
+    private ObjInfo(UiObject obj) throws UiObjectNotFoundException {
+        this._bounds = Rect.from(obj.getBounds());
+        this._checkable = obj.isCheckable();
+        this._checked = obj.isChecked();
+        this._childCount = obj.getChildCount();
+        this._clickable = obj.isClickable();
+        this._contentDescription = obj.getContentDescription();
+        this._enabled = obj.isEnabled();
+        this._focusable = obj.isFocusable();
+        this._focused = obj.isFocused();
+        this._longClickable = obj.isLongClickable();
+        this._packageName = obj.getPackageName();
+        this._scrollable = obj.isScrollable();
+        this._selected = obj.isSelected();
+        this._text = obj.getText();
+        try {
+            this._visibleBounds = Rect.from(obj.getVisibleBounds());
+        } catch (Exception e) {
+            Log.e("ignore visibleBounds");
+            this._visibleBounds = this._bounds;
+        }
+
+        this._className = obj.getClassName();
+    }
+
+    public ObjInfo(AccessibilityNodeInfo obj) {
+        android.graphics.Rect nodeRect = new android.graphics.Rect();
+        obj.getBoundsInScreen(nodeRect);
+        this._bounds = Rect.from(nodeRect);
+        this._checkable = obj.isCheckable();
+        this._checked = obj.isChecked();
+        this._childCount = obj.getChildCount();
+        this._clickable = obj.isClickable();
+        this._contentDescription = "";
+        this._contentDescription = obj.getContentDescription() != null ? obj.getContentDescription().toString() : "";
+        this._enabled = obj.isEnabled();
+        this._focusable = obj.isFocusable();
+        this._focused = obj.isFocused();
+        this._longClickable = obj.isLongClickable();
+        this._packageName = obj.getPackageName() != null ? obj.getPackageName().toString() : "";
+        this._scrollable = obj.isScrollable();
+        this._selected = obj.isSelected();
+        this._text = obj.getText() != null ? obj.getText().toString() : "";
+        this._visibleBounds = Rect.from(NDevices.getInstance().getVisibleBounds(obj));
+        this._className = obj.getClassName() != null ? obj.getClassName().toString() : "";
+    }
+
+    private ObjInfo(UiObject2 obj) {
+        this._bounds = Rect.from(obj.getVisibleBounds());
+        this._checkable = obj.isCheckable();
+        this._checked = obj.isChecked();
+        this._childCount = obj.getChildCount();
+        this._clickable = obj.isClickable();
+        this._contentDescription = obj.getContentDescription();
+        this._enabled = obj.isEnabled();
+        this._focusable = obj.isFocusable();
+        this._focused = obj.isFocused();
+        this._longClickable = obj.isLongClickable();
+        this._packageName = obj.getApplicationPackage();
+        this._scrollable = obj.isScrollable();
+        this._selected = obj.isSelected();
+        this._text = obj.getText();
         this._visibleBounds = Rect.from(obj.getVisibleBounds());
         this._className = obj.getClassName();
-	}
+        this._resourceName = obj.getResourceName();
+    }
 
-	private ObjInfo(UiObject2 obj) {
-		this._bounds = Rect.from(obj.getVisibleBounds());
-		this._checkable = obj.isCheckable();
-		this._checked = obj.isChecked();
-		this._childCount = obj.getChildCount();
-		this._clickable = obj.isClickable();
-		this._contentDescription = obj.getContentDescription();
-		this._enabled = obj.isEnabled();
-		this._focusable = obj.isFocusable();
-		this._focused = obj.isFocused();
-		this._longClickable = obj.isLongClickable();
-		this._packageName = obj.getApplicationPackage();
-		this._scrollable = obj.isScrollable();
-		this._selected = obj.isSelected();
-		this._text = obj.getText();
-		this._visibleBounds = Rect.from(obj.getVisibleBounds());
-		this._className = obj.getClassName();
-		this._resourceName = obj.getResourceName();
-	}
+    private Rect _bounds;
+    private Rect _visibleBounds;
+    private int _childCount;
+    private String _className;
+    private String _contentDescription;
+    private String _packageName;
+    private String _text;
+    private boolean _checkable;
+    private boolean _checked;
+    private boolean _clickable;
+    private boolean _enabled;
+    private boolean _focusable;
+    private boolean _focused;
+    private boolean _longClickable;
+    private boolean _scrollable;
+    private boolean _selected;
+    private String _resourceName;
 
-	private Rect _bounds;
-	private Rect _visibleBounds;
-	private int _childCount;
-	private String _className;
-	private String _contentDescription;
-	private String _packageName;
-	private String _text;
-	private boolean _checkable;
-	private boolean _checked;
-	private boolean _clickable;
-	private boolean _enabled;
-	private boolean _focusable;
-	private boolean _focused;
-	private boolean _longClickable;
-	private boolean _scrollable;
-	private boolean _selected;
-	private String _resourceName;
+    public Rect getBounds() {
+        return _bounds;
+    }
 
-	public Rect getBounds() {
-		return _bounds;
-	}
+    public void setBounds(Rect bounds) {
+        this._bounds = bounds;
+    }
 
-	public void setBounds(Rect bounds) {
-		this._bounds = bounds;
-	}
+    public Rect getVisibleBounds() {
+        return _visibleBounds;
+    }
 
-	public Rect getVisibleBounds() {
-		return _visibleBounds;
-	}
+    public void setVisibleBounds(Rect visibleBounds) {
+        this._visibleBounds = visibleBounds;
+    }
 
-	public void setVisibleBounds(Rect visibleBounds) {
-		this._visibleBounds = visibleBounds;
-	}
+    public int getChildCount() {
+        return _childCount;
+    }
 
-	public int getChildCount() {
-		return _childCount;
-	}
+    public void setChildCount(int childCount) {
+        this._childCount = childCount;
+    }
 
-	public void setChildCount(int childCount) {
-		this._childCount = childCount;
-	}
+    public String getClassName() {
+        return _className;
+    }
 
-	public String getClassName() {
-		return _className;
-	}
+    public void setClassName(String className) {
+        this._className = className;
+    }
 
-	public void setClassName(String className) {
-		this._className = className;
-	}
+    public String getContentDescription() {
+        return _contentDescription;
+    }
 
-	public String getContentDescription() {
-		return _contentDescription;
-	}
+    public void setContentDescription(String contentDescription) {
+        this._contentDescription = contentDescription;
+    }
 
-	public void setContentDescription(String contentDescription) {
-		this._contentDescription = contentDescription;
-	}
+    public String getPackageName() {
+        return _packageName;
+    }
 
-	public String getPackageName() {
-		return _packageName;
-	}
+    public void setPackageName(String packageName) {
+        this._packageName = packageName;
+    }
 
-	public void setPackageName(String packageName) {
-		this._packageName = packageName;
-	}
+    public String getText() {
+        return _text;
+    }
 
-	public String getText() {
-		return _text;
-	}
+    public void setText(String text) {
+        this._text = text;
+    }
 
-	public void setText(String text) {
-		this._text = text;
-	}
+    public boolean isCheckable() {
+        return _checkable;
+    }
 
-	public boolean isCheckable() {
-		return _checkable;
-	}
+    public void setCheckable(boolean checkable) {
+        this._checkable = checkable;
+    }
 
-	public void setCheckable(boolean checkable) {
-		this._checkable = checkable;
-	}
+    public boolean isChecked() {
+        return _checked;
+    }
 
-	public boolean isChecked() {
-		return _checked;
-	}
+    public void setChecked(boolean checked) {
+        this._checked = checked;
+    }
 
-	public void setChecked(boolean checked) {
-		this._checked = checked;
-	}
+    public boolean isClickable() {
+        return _clickable;
+    }
 
-	public boolean isClickable() {
-		return _clickable;
-	}
+    public void setClickable(boolean clickable) {
+        this._clickable = clickable;
+    }
 
-	public void setClickable(boolean clickable) {
-		this._clickable = clickable;
-	}
+    public boolean isEnabled() {
+        return _enabled;
+    }
 
-	public boolean isEnabled() {
-		return _enabled;
-	}
+    public void setEnabled(boolean enabled) {
+        this._enabled = enabled;
+    }
 
-	public void setEnabled(boolean enabled) {
-		this._enabled = enabled;
-	}
+    public boolean isFocusable() {
+        return _focusable;
+    }
 
-	public boolean isFocusable() {
-		return _focusable;
-	}
+    public void setFocusable(boolean focusable) {
+        this._focusable = focusable;
+    }
 
-	public void setFocusable(boolean focusable) {
-		this._focusable = focusable;
-	}
+    public boolean isFocused() {
+        return _focused;
+    }
 
-	public boolean isFocused() {
-		return _focused;
-	}
+    public void setFocused(boolean focused) {
+        this._focused = focused;
+    }
 
-	public void setFocused(boolean focused) {
-		this._focused = focused;
-	}
+    public boolean isLongClickable() {
+        return _longClickable;
+    }
 
-	public boolean isLongClickable() {
-		return _longClickable;
-	}
+    public void setLongClickable(boolean longClickable) {
+        this._longClickable = longClickable;
+    }
 
-	public void setLongClickable(boolean longClickable) {
-		this._longClickable = longClickable;
-	}
+    public boolean isScrollable() {
+        return _scrollable;
+    }
 
-	public boolean isScrollable() {
-		return _scrollable;
-	}
+    public void setScrollable(boolean scrollable) {
+        this._scrollable = scrollable;
+    }
 
-	public void setScrollable(boolean scrollable) {
-		this._scrollable = scrollable;
-	}
+    public boolean isSelected() {
+        return _selected;
+    }
 
-	public boolean isSelected() {
-		return _selected;
-	}
+    public void setSelected(boolean selected) {
+        this._selected = selected;
+    }
 
-	public void setSelected(boolean selected) { this._selected = selected; }
+    public String getResourceName() {
+        return _resourceName;
+    }
 
-	public String getResourceName() {
-		return _resourceName;
-	}
-
-	public void setResourceName(String resourceName) {
-		this._resourceName = resourceName;
-	}
+    public void setResourceName(String resourceName) {
+        this._resourceName = resourceName;
+    }
 }

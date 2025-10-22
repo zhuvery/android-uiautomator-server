@@ -248,5 +248,15 @@ public interface TestService {
     @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
     boolean exist(Selector obj);
 
+    /**
+     * Get the object info.
+     *
+     * @param obj the target ui object.
+     * @return object info.
+     * @throws UiObjectNotFoundException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    ObjInfo objInfo(Selector obj) throws UiObjectNotFoundException;
+
     void testApi();
 }

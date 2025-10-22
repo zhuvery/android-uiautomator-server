@@ -498,6 +498,18 @@ public class TestServiceImpl implements TestService {
         return this.nDevices.exist(obj);
     }
 
+    /**
+     * Get the object info.
+     *
+     * @param obj the target ui object.
+     * @return object info.
+     * @throws UiObjectNotFoundException
+     */
+    @Override
+    public ObjInfo objInfo(Selector obj) throws UiObjectNotFoundException {
+        return this.nDevices.objInfo(obj);
+    }
+
     @Override
     public void testApi() {
         Log.d("test api111:" + this.nDevices.getU1UiDevices().getDisplayWidth());

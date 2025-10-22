@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.graphics.Rect;
 
+import com.github.uiautomator.stub.ObjInfo;
 import com.github.uiautomator.stub.Selector;
 import com.github.uiautomator.stub.FakeInstrument;
 import com.github.uiautomator.stub.FakeInstrumentationRegistry;
@@ -184,7 +185,7 @@ public class NDevices {
         return null;
     }
 
-    private Rect getVisibleBounds(AccessibilityNodeInfo node) {
+    public Rect getVisibleBounds(AccessibilityNodeInfo node) {
         if (node == null) return null;
         int w = this.u1UiDevice.getDisplayWidth();
         int h = this.u1UiDevice.getDisplayHeight();
@@ -419,6 +420,31 @@ public class NDevices {
         } else {
             AccessibilityNodeInfo node = this.findObject(selector);
             return node != null;
+        }
+    }
+
+    public ObjInfo objInfo(Selector obj) {
+        if (this.lastUiInfo == null) {
+            try {
+                return ObjInfo.getObjInfo(this.u2UiDevice.findObject(obj.toUiSelector()));
+            } catch (Exception e) {
+                Log.e("ObjInfo.getObjInfo error: " + e);
+                return null;
+            }
+        } else {
+            AccessibilityNodeInfo node = this.findObject(obj);
+            if (node == null) {
+                Log.e("objInfo error, node is null");
+                return null;
+            } else {
+                try {
+                    return ObjInfo.getObjInfo(node);
+                } catch (Exception e) {
+                    Log.e("AccessibilityNodeInfo ObjInfo.getObjInfo error: " + e);
+                    return null;
+                }
+            }
+
         }
     }
 }
