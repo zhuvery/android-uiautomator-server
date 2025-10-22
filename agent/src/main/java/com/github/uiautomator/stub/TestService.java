@@ -191,5 +191,54 @@ public interface TestService {
     @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
     boolean click(Selector obj, String corner) throws UiObjectNotFoundException;
 
+    /**
+     * Long clicks the center of the visible bounds of the UI element
+     *
+     * @param obj the target ui object.
+     * @return true if operation was successful
+     * @throws UiObjectNotFoundException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    boolean longClick(Selector obj) throws UiObjectNotFoundException;
+
+    /**
+     * Long clicks bottom and right corner of the UI element
+     *
+     * @param obj    the target ui object.
+     * @param corner "br"/"bottomright" means BottomRight, "tl"/"topleft" means TopLeft, "center" means Center.
+     * @return true if operation was successful
+     * @throws UiObjectNotFoundException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    boolean longClick(Selector obj, String corner) throws UiObjectNotFoundException;
+
+    /**
+     * Drags this object to a destination UiObject. The number of steps specified in your input parameter can influence the drag speed, and varying speeds may impact the results. Consider evaluating different speeds when using this method in your tests.
+     *
+     * @param obj     the ui object to be dragged.
+     * @param destObj the ui object to be dragged to.
+     * @param steps   usually 40 steps. You can increase or decrease the steps to change the speed.
+     * @return true if successful
+     * @throws UiObjectNotFoundException
+     * @throws NotImplementedException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2), @JsonRpcError(exception = NotImplementedException.class, code = ERROR_CODE_BASE - 3)})
+    boolean dragTo(Selector obj, Selector destObj, int steps) throws UiObjectNotFoundException, NotImplementedException;
+
+    /**
+     * Drags this object to arbitrary coordinates. The number of steps specified in your input parameter can influence the drag speed, and varying speeds may impact the results. Consider evaluating different speeds when using this method in your tests.
+     *
+     * @param obj   the ui object to be dragged.
+     * @param destX the X-axis coordinate of destination.
+     * @param destY the Y-axis coordinate of destination.
+     * @param steps usually 40 steps. You can increase or decrease the steps to change the speed.
+     * @return true if successful
+     * @throws UiObjectNotFoundException
+     * @throws NotImplementedException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2), @JsonRpcError(exception = NotImplementedException.class, code = ERROR_CODE_BASE - 3)})
+    boolean dragTo(Selector obj, int destX, int destY, int steps) throws UiObjectNotFoundException, NotImplementedException;
+
+
     void testApi();
 }

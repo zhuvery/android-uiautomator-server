@@ -15,6 +15,8 @@ import com.github.uiautomator.stub.TouchController;
 import com.github.uiautomator.tools.ReflectionUtils;
 import com.github.uiautomator.tools.AccessibilityNodeInfoHelper;
 
+import androidx.annotation.NonNull;
+
 public class NDevices {
 
     private com.android.uiautomator.core.UiDevice u1UiDevice = null;
@@ -92,7 +94,7 @@ public class NDevices {
         if (accessibilityNodeInfo != null) {
             return accessibilityNodeInfo;
         } else {
-            Log.e("accessibilityNodeInfo is null|cannot getText");
+            Log.e("accessibilityNodeInfo is null");
             return null;
         }
     }
@@ -266,4 +268,146 @@ public class NDevices {
         }
         return false;
     }
+
+    public boolean longClickBottomRight(AccessibilityNodeInfo node) {
+        if (node == null) {
+            Log.d("cannot find node");
+            return false;
+        }
+        Rect rect = this.getVisibleBounds(node);
+        return this.longClickBottomRight(rect);
+    }
+
+    public boolean longClickTopLeft(AccessibilityNodeInfo node) {
+        if (node == null) {
+            Log.d("cannot find node");
+            return false;
+        }
+        Rect rect = this.getVisibleBounds(node);
+        return this.longClickTopLeft(rect);
+    }
+
+    public boolean longClick(AccessibilityNodeInfo node) {
+        if (node == null) {
+            Log.d("cannot find node");
+            return false;
+        }
+        Rect rect = this.getVisibleBounds(node);
+        return this.longClick(rect);
+    }
+
+    public boolean longClick(Rect rect) {
+        return this.interactionController.longClickNoSync(rect.centerX(), rect.centerY());
+    }
+
+    public boolean longClickTopLeft(Rect rect) {
+        return this.interactionController.longClickNoSync(rect.left + 5, rect.top + 5);
+    }
+
+    public boolean longClickBottomRight(Rect rect) {
+        return this.interactionController.longClickNoSync(rect.right - 5, rect.bottom - 5);
+    }
+
+    public boolean longClick(Selector selector, String corner) {
+        android.support.test.uiautomator.UiObject obj = null;
+        AccessibilityNodeInfo node = null;
+        Rect rect = null;
+        if (this.lastUiInfo == null) {
+            obj = this.u2UiDevice.findObject(selector.toUiSelector());
+            try {
+                rect = obj.getBounds();
+            } catch (Exception e) {
+                Log.e("cannot find node");
+            }
+        } else {
+            node = this.findObject(selector);
+        }
+        if (corner == null) corner = "center";
+        corner = corner.toLowerCase();
+        try {
+            switch (corner) {
+                case "br":
+                case "bottomright":
+                    return rect != null ? this.longClickBottomRight(rect) : this.longClickBottomRight(node);
+                case "tl":
+                case "topleft":
+                    return rect != null ? this.longClickTopLeft(rect) : this.longClickTopLeft(node);
+                case "c":
+                case "center":
+                    return rect != null ? this.longClick(rect) : this.longClick(node);
+            }
+        } catch (Exception e) {
+            Log.e("click error:" + e);
+        }
+        return false;
+    }
+
+    public boolean dragTo(Rect srcRect, Rect dstRect, int steps) {
+        return this.interactionController.swipe(srcRect.centerX(), srcRect.centerY(), dstRect.centerX(), dstRect.centerY(), steps, true);
+    }
+
+    public boolean dragTo(Rect srcRect, int destX, int destY, int steps) {
+        return this.interactionController.swipe(srcRect.centerX(), srcRect.centerY(), destX, destY, steps, true);
+    }
+
+    public boolean dragTo(AccessibilityNodeInfo srcNode, AccessibilityNodeInfo dstNode, int steps) {
+        if (srcNode == null || dstNode == null) {
+            Log.d("cannot find node");
+            return false;
+        }
+        Rect srcRect = this.getVisibleBounds(srcNode);
+        Rect dstRect = this.getVisibleBounds(dstNode);
+        return this.dragTo(srcRect, dstRect, steps);
+    }
+
+    public boolean dragTo(AccessibilityNodeInfo srcNode, int destX, int destY, int steps) {
+        if (srcNode == null) {
+            Log.d("cannot find node");
+            return false;
+        }
+        Rect srcRect = this.getVisibleBounds(srcNode);
+        return this.dragTo(srcRect, destX, destY, steps);
+    }
+
+    public boolean dragTo(Selector selector, Selector destSelector, int steps) {
+        android.support.test.uiautomator.UiObject obj = null;
+        android.support.test.uiautomator.UiObject destObj = null;
+        AccessibilityNodeInfo node = null;
+        AccessibilityNodeInfo desNode = null;
+        Rect rect = null;
+        Rect desRect = null;
+        if (this.lastUiInfo == null) {
+            obj = this.u2UiDevice.findObject(selector.toUiSelector());
+            destObj = this.u2UiDevice.findObject(destSelector.toUiSelector());
+            try {
+                rect = obj.getBounds();
+                desRect = destObj.getBounds();
+            } catch (Exception e) {
+                Log.e("cannot find node");
+            }
+        } else {
+            node = this.findObject(selector);
+            desNode = this.findObject(destSelector);
+        }
+        return rect != null && desRect != null ? this.dragTo(rect, desRect, steps) : this.dragTo(node, desNode, steps);
+    }
+
+    public boolean dragTo(Selector selector, int destX, int destY, int steps) {
+        android.support.test.uiautomator.UiObject obj = null;
+        AccessibilityNodeInfo node = null;
+        Rect rect = null;
+        Rect desRect = null;
+        if (this.lastUiInfo == null) {
+            obj = this.u2UiDevice.findObject(selector.toUiSelector());
+            try {
+                rect = obj.getBounds();
+            } catch (Exception e) {
+                Log.e("cannot find node");
+            }
+        } else {
+            node = this.findObject(selector);
+        }
+        return rect != null ? this.dragTo(rect, destX, destY, steps) : this.dragTo(node, destX, destY, steps);
+    }
+
 }

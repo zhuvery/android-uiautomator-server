@@ -110,7 +110,7 @@ public class TestServiceImpl implements TestService {
      * @throws UiObjectNotFoundException
      */
     public String getText(Selector paramSelector) throws UiObjectNotFoundException {
-        return NDevices.getInstance().getText(paramSelector);
+        return this.nDevices.getText(paramSelector);
     }
 
     /**
@@ -125,18 +125,18 @@ public class TestServiceImpl implements TestService {
         if (x < 0 || y < 0) {
             return false;
         }
-        NDevices.getInstance().getTouchController().touchDown(x, y);
+        this.nDevices.getTouchController().touchDown(x, y);
         SystemClock.sleep(100); // normally 100ms for click
-        return NDevices.getInstance().getTouchController().touchUp(x, y);
+        return this.nDevices.getTouchController().touchUp(x, y);
     }
 
     public boolean click(int x, int y, long milliseconds) {
         if (x < 0 || y < 0) {
             return false;
         }
-        NDevices.getInstance().getTouchController().touchDown(x, y);
+        this.nDevices.getTouchController().touchDown(x, y);
         SystemClock.sleep(milliseconds);
-        return NDevices.getInstance().getTouchController().touchUp(x, y);
+        return this.nDevices.getTouchController().touchUp(x, y);
     }
 
     /**
@@ -152,7 +152,7 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public boolean drag(int startX, int startY, int endX, int endY, int steps) throws NotImplementedException {
-        return NDevices.getInstance().getU2UiDevices().drag(startX, startY, endX, endY, steps);
+        return this.nDevices.getU2UiDevices().drag(startX, startY, endX, endY, steps);
     }
 
     /**
@@ -167,7 +167,7 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public boolean swipe(int startX, int startY, int endX, int endY, int steps) {
-        return NDevices.getInstance().getU2UiDevices().swipe(startX, startY, endX, endY, steps);
+        return this.nDevices.getU2UiDevices().swipe(startX, startY, endX, endY, steps);
     }
 
     @Override
@@ -176,13 +176,13 @@ public class TestServiceImpl implements TestService {
         for (int i = 0; i < segments.length / 2; i++) {
             points[i] = new android.graphics.Point(segments[2 * i], segments[2 * i + 1]);
         }
-        return NDevices.getInstance().getU2UiDevices().swipe(points, segmentSteps);
+        return this.nDevices.getU2UiDevices().swipe(points, segmentSteps);
     }
 
     // Multi touch is a little complicated
     @Override
     public boolean injectInputEvent(int action, float x, float y, int metaState) {
-        TouchController touchController = NDevices.getInstance().getTouchController();
+        TouchController touchController = this.nDevices.getTouchController();
         switch (action) {
             case MotionEvent.ACTION_DOWN: // 0
                 return touchController.touchDown(x, y);
@@ -208,7 +208,7 @@ public class TestServiceImpl implements TestService {
     public String takeScreenshot(String filename, float scale, int quality) throws NotImplementedException {
         // 截图文件都保存在/data/local/tmp中
         File f = new File("/data/local/tmp", filename);
-        NDevices.getInstance().getU2UiDevices().takeScreenshot(f, scale, quality);
+        this.nDevices.getU2UiDevices().takeScreenshot(f, scale, quality);
         if (f.exists()) return f.getAbsolutePath();
         return null;
     }
@@ -216,7 +216,7 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public String takeScreenshot(float scale, int quality) throws NotImplementedException {
-        Bitmap screenshot = NDevices.getInstance().getU2UiAutomation().takeScreenshot();
+        Bitmap screenshot = this.nDevices.getU2UiAutomation().takeScreenshot();
         if (screenshot == null) {
             return null;
         }
@@ -247,8 +247,8 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public void freezeRotation(boolean freeze) throws RemoteException {
-        if (freeze) NDevices.getInstance().getU2UiDevices().freezeRotation();
-        else NDevices.getInstance().getU2UiDevices().unfreezeRotation();
+        if (freeze) this.nDevices.getU2UiDevices().freezeRotation();
+        else this.nDevices.getU2UiDevices().unfreezeRotation();
     }
 
     /**
@@ -262,11 +262,11 @@ public class TestServiceImpl implements TestService {
     public void setOrientation(String dir) throws RemoteException, NotImplementedException {
         dir = dir.toLowerCase();
         if ("left".equals(dir) || "l".equals(dir))
-            NDevices.getInstance().getU2UiDevices().setOrientationLeft();
+            this.nDevices.getU2UiDevices().setOrientationLeft();
         else if ("right".equals(dir) || "r".equals(dir))
-            NDevices.getInstance().getU2UiDevices().setOrientationRight();
+            this.nDevices.getU2UiDevices().setOrientationRight();
         else if ("natural".equals(dir) || "n".equals(dir))
-            NDevices.getInstance().getU2UiDevices().setOrientationNatural();
+            this.nDevices.getU2UiDevices().setOrientationNatural();
     }
 
     /**
@@ -277,7 +277,7 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public boolean openNotification() throws NotImplementedException {
-        return NDevices.getInstance().getU2UiDevices().openNotification();
+        return this.nDevices.getU2UiDevices().openNotification();
     }
 
     /**
@@ -288,7 +288,7 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public boolean openQuickSettings() throws NotImplementedException {
-        return NDevices.getInstance().getU2UiDevices().openQuickSettings();
+        return this.nDevices.getU2UiDevices().openQuickSettings();
     }
 
     /**
@@ -302,35 +302,35 @@ public class TestServiceImpl implements TestService {
     public boolean pressKey(String key) throws RemoteException {
         boolean result;
         key = key.toLowerCase();
-        if ("home".equals(key)) result = NDevices.getInstance().getU2UiDevices().pressHome();
-        else if ("back".equals(key)) result = NDevices.getInstance().getU2UiDevices().pressBack();
+        if ("home".equals(key)) result = this.nDevices.getU2UiDevices().pressHome();
+        else if ("back".equals(key)) result = this.nDevices.getU2UiDevices().pressBack();
         else if ("left".equals(key))
-            result = NDevices.getInstance().getU2UiDevices().pressDPadLeft();
+            result = this.nDevices.getU2UiDevices().pressDPadLeft();
         else if ("right".equals(key))
-            result = NDevices.getInstance().getU2UiDevices().pressDPadRight();
-        else if ("up".equals(key)) result = NDevices.getInstance().getU2UiDevices().pressDPadUp();
+            result = this.nDevices.getU2UiDevices().pressDPadRight();
+        else if ("up".equals(key)) result = this.nDevices.getU2UiDevices().pressDPadUp();
         else if ("down".equals(key))
-            result = NDevices.getInstance().getU2UiDevices().pressDPadDown();
+            result = this.nDevices.getU2UiDevices().pressDPadDown();
         else if ("center".equals(key))
-            result = NDevices.getInstance().getU2UiDevices().pressDPadCenter();
-        else if ("menu".equals(key)) result = NDevices.getInstance().getU2UiDevices().pressMenu();
+            result = this.nDevices.getU2UiDevices().pressDPadCenter();
+        else if ("menu".equals(key)) result = this.nDevices.getU2UiDevices().pressMenu();
         else if ("search".equals(key))
-            result = NDevices.getInstance().getU2UiDevices().pressSearch();
-        else if ("enter".equals(key)) result = NDevices.getInstance().getU2UiDevices().pressEnter();
+            result = this.nDevices.getU2UiDevices().pressSearch();
+        else if ("enter".equals(key)) result = this.nDevices.getU2UiDevices().pressEnter();
         else if ("delete".equals(key) || "del".equals(key))
-            result = NDevices.getInstance().getU2UiDevices().pressDelete();
+            result = this.nDevices.getU2UiDevices().pressDelete();
         else if ("recent".equals(key))
-            result = NDevices.getInstance().getU2UiDevices().pressRecentApps();
+            result = this.nDevices.getU2UiDevices().pressRecentApps();
         else if ("volume_up".equals(key))
-            result = NDevices.getInstance().getU2UiDevices().pressKeyCode(KeyEvent.KEYCODE_VOLUME_UP);
+            result = this.nDevices.getU2UiDevices().pressKeyCode(KeyEvent.KEYCODE_VOLUME_UP);
         else if ("volume_down".equals(key))
-            result = NDevices.getInstance().getU2UiDevices().pressKeyCode(KeyEvent.KEYCODE_VOLUME_DOWN);
+            result = this.nDevices.getU2UiDevices().pressKeyCode(KeyEvent.KEYCODE_VOLUME_DOWN);
         else if ("volume_mute".equals(key))
-            result = NDevices.getInstance().getU2UiDevices().pressKeyCode(KeyEvent.KEYCODE_VOLUME_MUTE);
+            result = this.nDevices.getU2UiDevices().pressKeyCode(KeyEvent.KEYCODE_VOLUME_MUTE);
         else if ("camera".equals(key))
-            result = NDevices.getInstance().getU2UiDevices().pressKeyCode(KeyEvent.KEYCODE_CAMERA);
+            result = this.nDevices.getU2UiDevices().pressKeyCode(KeyEvent.KEYCODE_CAMERA);
         else
-            result = "power".equals(key) && NDevices.getInstance().getU2UiDevices().pressKeyCode(KeyEvent.KEYCODE_POWER);
+            result = "power".equals(key) && this.nDevices.getU2UiDevices().pressKeyCode(KeyEvent.KEYCODE_POWER);
         return result;
     }
 
@@ -342,7 +342,7 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public boolean pressKeyCode(int keyCode) {
-        return NDevices.getInstance().getU2UiDevices().pressKeyCode(keyCode);
+        return this.nDevices.getU2UiDevices().pressKeyCode(keyCode);
     }
 
     /**
@@ -354,7 +354,7 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public boolean pressKeyCode(int keyCode, int metaState) {
-        return NDevices.getInstance().getU2UiDevices().pressKeyCode(keyCode, metaState);
+        return this.nDevices.getU2UiDevices().pressKeyCode(keyCode, metaState);
     }
 
     /**
@@ -364,7 +364,7 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public void wakeUp() throws RemoteException {
-        NDevices.getInstance().getU1UiDevices().wakeUp();
+        this.nDevices.getU1UiDevices().wakeUp();
     }
 
     /**
@@ -374,7 +374,7 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public void sleep() throws RemoteException {
-        NDevices.getInstance().getU1UiDevices().sleep();
+        this.nDevices.getU1UiDevices().sleep();
     }
 
     /**
@@ -385,12 +385,12 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public boolean isScreenOn() throws RemoteException {
-        return NDevices.getInstance().getU1UiDevices().isScreenOn();
+        return this.nDevices.getU1UiDevices().isScreenOn();
     }
 
     @Override
     public void clearTextField(Selector obj) throws UiObjectNotFoundException {
-        NDevices.getInstance().clearTextField(obj);
+        this.nDevices.clearTextField(obj);
     }
 
     /**
@@ -403,7 +403,7 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public boolean setText(Selector obj, String text) throws UiObjectNotFoundException {
-        return NDevices.getInstance().setText(obj, text);
+        return this.nDevices.setText(obj, text);
     }
 
     /**
@@ -415,7 +415,7 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public boolean click(Selector obj) throws UiObjectNotFoundException {
-        return NDevices.getInstance().click(obj, "c");
+        return this.nDevices.click(obj, "c");
     }
 
     /**
@@ -428,12 +428,68 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public boolean click(Selector obj, String corner) throws UiObjectNotFoundException {
-        return NDevices.getInstance().click(obj, corner);
+        return this.nDevices.click(obj, corner);
+    }
+
+    /**
+     * Long clicks the center of the visible bounds of the UI element
+     *
+     * @param obj the target ui object.
+     * @return true if operation was successful
+     * @throws UiObjectNotFoundException
+     */
+    @Override
+    public boolean longClick(Selector obj) throws UiObjectNotFoundException {
+        return this.nDevices.longClick(obj, "c");
+    }
+
+    /**
+     * Long clicks bottom and right corner of the UI element
+     *
+     * @param obj    the target ui object.
+     * @param corner "br"/"bottomright" means BottomRight, "tl"/"topleft" means TopLeft, "center" means Center.
+     * @return true if operation was successful
+     * @throws UiObjectNotFoundException
+     */
+    @Override
+    public boolean longClick(Selector obj, String corner) throws UiObjectNotFoundException {
+        return this.nDevices.longClick(obj, corner);
+    }
+
+    /**
+     * Drags this object to a destination UiObject. The number of steps specified in your input parameter can influence the drag speed, and varying speeds may impact the results. Consider evaluating different speeds when using this method in your tests.
+     *
+     * @param obj     the ui object to be dragged.
+     * @param destObj the ui object to be dragged to.
+     * @param steps   usually 40 steps. You can increase or decrease the steps to change the speed.
+     * @return true if successful
+     * @throws UiObjectNotFoundException
+     * @throws NotImplementedException
+     */
+    @Override
+    public boolean dragTo(Selector obj, Selector destObj, int steps) throws UiObjectNotFoundException, NotImplementedException {
+        return this.nDevices.dragTo(obj, destObj, steps);
+    }
+
+    /**
+     * Drags this object to arbitrary coordinates. The number of steps specified in your input parameter can influence the drag speed, and varying speeds may impact the results. Consider evaluating different speeds when using this method in your tests.
+     *
+     * @param obj   the ui object to be dragged.
+     * @param destX the X-axis coordinate of destination.
+     * @param destY the Y-axis coordinate of destination.
+     * @param steps usually 40 steps. You can increase or decrease the steps to change the speed.
+     * @return true if successful
+     * @throws UiObjectNotFoundException
+     * @throws NotImplementedException
+     */
+    @Override
+    public boolean dragTo(Selector obj, int destX, int destY, int steps) throws UiObjectNotFoundException, NotImplementedException {
+        return this.nDevices.dragTo(obj, destX, destY, steps);
     }
 
     @Override
     public void testApi() {
-        Log.d("test api111:" + NDevices.getInstance().getU1UiDevices().getDisplayWidth());
-        Log.d("test api222:" + NDevices.getInstance().getU1UiDevices().getDisplayHeight());
+        Log.d("test api111:" + this.nDevices.getU1UiDevices().getDisplayWidth());
+        Log.d("test api222:" + this.nDevices.getU1UiDevices().getDisplayHeight());
     }
 }

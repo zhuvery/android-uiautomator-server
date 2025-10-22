@@ -53,4 +53,18 @@ public class InteractionController {
     public boolean clickNoSync(int paramInt1, int paramInt2) {
         return ((Boolean) ReflectionUtils.invoke(ReflectionUtils.method("android.support.test.uiautomator.InteractionController", "clickNoSync", new Class[]{int.class, int.class}), this.interactionController, new Object[]{Integer.valueOf(paramInt1), Integer.valueOf(paramInt2)})).booleanValue();
     }
+
+    public boolean longClickNoSync(int paramInt1, int paramInt2) {
+        return ((Boolean) ReflectionUtils.invoke(ReflectionUtils.method("android.support.test.uiautomator.InteractionController", "longTapNoSync", new Class[]{int.class, int.class}), this.interactionController, new Object[]{Integer.valueOf(paramInt1), Integer.valueOf(paramInt2)})).booleanValue();
+    }
+
+    public boolean swipe(int downX, int downY, int upX, int upY, int steps) {
+        return ((Boolean) ReflectionUtils.invoke(ReflectionUtils.method("android.support.test.uiautomator.InteractionController", "swipe", new Class[]{int.class, int.class, int.class, int.class, int.class}), this.interactionController, new Object[]{Integer.valueOf(downX), Integer.valueOf(downY), Integer.valueOf(upX), Integer.valueOf(upY), Integer.valueOf(steps)})).booleanValue();
+
+    }
+
+    public boolean swipe(int downX, int downY, int upX, int upY, int steps, boolean drag) {
+        return ((Boolean) ReflectionUtils.invoke(ReflectionUtils.method("android.support.test.uiautomator.InteractionController", "swipe", new Class[]{int.class, int.class, int.class, int.class, int.class, boolean.class}), this.interactionController, new Object[]{Integer.valueOf(downX), Integer.valueOf(downY), Integer.valueOf(upX), Integer.valueOf(upY), Integer.valueOf(steps), Boolean.valueOf(drag)})).booleanValue();
+
+    }
 }
