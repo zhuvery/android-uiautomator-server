@@ -49,4 +49,8 @@ public class InteractionController {
         }
         return true;
     }
+
+    public boolean clickNoSync(int paramInt1, int paramInt2) {
+        return ((Boolean) ReflectionUtils.invoke(ReflectionUtils.method("android.support.test.uiautomator.InteractionController", "clickNoSync", new Class[]{int.class, int.class}), this.interactionController, new Object[]{Integer.valueOf(paramInt1), Integer.valueOf(paramInt2)})).booleanValue();
+    }
 }

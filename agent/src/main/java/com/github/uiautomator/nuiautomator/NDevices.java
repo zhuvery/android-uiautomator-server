@@ -5,6 +5,7 @@ import android.app.UiAutomation;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.graphics.Rect;
 
 import com.github.uiautomator.stub.Selector;
 import com.github.uiautomator.stub.FakeInstrument;
@@ -12,6 +13,7 @@ import com.github.uiautomator.stub.FakeInstrumentationRegistry;
 import com.github.uiautomator.stub.Log;
 import com.github.uiautomator.stub.TouchController;
 import com.github.uiautomator.tools.ReflectionUtils;
+import com.github.uiautomator.tools.AccessibilityNodeInfoHelper;
 
 public class NDevices {
 
@@ -126,8 +128,7 @@ public class NDevices {
                 return false;
             }
         } else {
-            if (text == null)
-                text = "";
+            if (text == null) text = "";
             if (this.API_LEVEL_ACTUAL > 19) {
                 AccessibilityNodeInfo node = this.findObject(selector);
                 if (node == null) {
@@ -156,20 +157,113 @@ public class NDevices {
             AccessibilityNodeInfo node = this.findObject(selector);
             if (node != null) {
                 CharSequence text = node.getText();
-                if (text != null && text.length() > 0)
-                    if (this.API_LEVEL_ACTUAL > 19) {
-                        this.setText(selector, "");
-                    } else {
-                        Bundle selectionArgs = new Bundle();
-                        selectionArgs.putInt("ACTION_ARGUMENT_SELECTION_START_INT", 0);
-                        selectionArgs.putInt("ACTION_ARGUMENT_SELECTION_END_INT", text.length());
-                        boolean ret = node.performAction(1);
-                        if (!ret) Log.e("ACTION_FOCUS on text field failed.");
-                        ret = node.performAction(131072, selectionArgs);
-                        if (!ret) Log.e("ACTION_SET_SELECTION on text field failed.");
-                        this.interactionController.sendKey(67, 0);
-                    }
+                if (text != null && text.length() > 0) if (this.API_LEVEL_ACTUAL > 19) {
+                    this.setText(selector, "");
+                } else {
+                    Bundle selectionArgs = new Bundle();
+                    selectionArgs.putInt("ACTION_ARGUMENT_SELECTION_START_INT", 0);
+                    selectionArgs.putInt("ACTION_ARGUMENT_SELECTION_END_INT", text.length());
+                    boolean ret = node.performAction(1);
+                    if (!ret) Log.e("ACTION_FOCUS on text field failed.");
+                    ret = node.performAction(131072, selectionArgs);
+                    if (!ret) Log.e("ACTION_SET_SELECTION on text field failed.");
+                    this.interactionController.sendKey(67, 0);
+                }
             }
         }
+    }
+
+    private AccessibilityNodeInfo getScrollableParent(AccessibilityNodeInfo node) {
+        AccessibilityNodeInfo parent = node;
+        while (parent != null) {
+            parent = parent.getParent();
+            if (parent != null && parent.isScrollable()) return parent;
+        }
+        return null;
+    }
+
+    private Rect getVisibleBounds(AccessibilityNodeInfo node) {
+        if (node == null) return null;
+        int w = this.u1UiDevice.getDisplayWidth();
+        int h = this.u1UiDevice.getDisplayHeight();
+        Rect nodeRect = AccessibilityNodeInfoHelper.getVisibleBoundsInScreen(node, w, h);
+        AccessibilityNodeInfo scrollableParentNode = this.getScrollableParent(node);
+        if (scrollableParentNode == null) return nodeRect;
+        Rect parentRect = AccessibilityNodeInfoHelper.getVisibleBoundsInScreen(scrollableParentNode, w, h);
+        nodeRect.intersect(parentRect);
+        return nodeRect;
+    }
+
+    public boolean clickBottomRight(AccessibilityNodeInfo node) {
+        if (node == null) {
+            Log.d("cannot find node");
+            return false;
+        }
+        Rect rect = this.getVisibleBounds(node);
+        return this.clickBottomRight(rect);
+    }
+
+    public boolean clickTopLeft(AccessibilityNodeInfo node) {
+        if (node == null) {
+            Log.d("cannot find node");
+            return false;
+        }
+        Rect rect = this.getVisibleBounds(node);
+        return this.clickTopLeft(rect);
+    }
+
+    public boolean click(AccessibilityNodeInfo node) {
+        if (node == null) {
+            Log.d("cannot find node");
+            return false;
+        }
+        Rect rect = this.getVisibleBounds(node);
+        return this.click(rect);
+    }
+
+    public boolean click(Rect rect) {
+        return this.interactionController.clickNoSync(rect.centerX(), rect.centerY());
+    }
+
+    public boolean clickTopLeft(Rect rect) {
+        return this.interactionController.clickNoSync(rect.left + 5, rect.top + 5);
+    }
+
+    public boolean clickBottomRight(Rect rect) {
+        return this.interactionController.clickNoSync(rect.right - 5, rect.bottom - 5);
+    }
+
+    public boolean click(Selector selector, String corner) {
+        android.support.test.uiautomator.UiObject obj = null;
+        AccessibilityNodeInfo node = null;
+        Rect rect = null;
+        if (this.lastUiInfo == null) {
+            obj = this.u2UiDevice.findObject(selector.toUiSelector());
+            try {
+                rect = obj.getBounds();
+            } catch (Exception e) {
+                Log.e("cannot find node");
+            }
+        } else {
+            node = this.findObject(selector);
+        }
+        if (corner == null) corner = "center";
+        corner = corner.toLowerCase();
+        try {
+            switch (corner) {
+                case "br":
+                case "bottomright":
+                    return rect != null ? this.clickBottomRight(rect) : this.clickBottomRight(node);
+                case "tl":
+                case "topleft":
+                    return rect != null ? this.clickTopLeft(rect) : this.clickTopLeft(node);
+                case "c":
+                case "center":
+                    return rect != null ? this.click(rect) : this.click(node);
+            }
+        } catch (Exception e) {
+            Log.e("click error:" + e);
+        }
+        return false;
     }
 }

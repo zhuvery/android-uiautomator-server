@@ -405,4 +405,35 @@ public class TestServiceImpl implements TestService {
     public boolean setText(Selector obj, String text) throws UiObjectNotFoundException {
         return NDevices.getInstance().setText(obj, text);
     }
+
+    /**
+     * Performs a click at the center of the visible bounds of the UI element represented by this UiObject.
+     *
+     * @param obj the target ui object.
+     * @return true id successful else false
+     * @throws UiObjectNotFoundException
+     */
+    @Override
+    public boolean click(Selector obj) throws UiObjectNotFoundException {
+        return NDevices.getInstance().click(obj, "c");
+    }
+
+    /**
+     * Clicks the bottom and right corner or top and left corner of the UI element
+     *
+     * @param obj    the target ui object.
+     * @param corner "br"/"bottomright" means BottomRight, "tl"/"topleft" means TopLeft, "center" means Center.
+     * @return true on success
+     * @throws UiObjectNotFoundException
+     */
+    @Override
+    public boolean click(Selector obj, String corner) throws UiObjectNotFoundException {
+        return NDevices.getInstance().click(obj, corner);
+    }
+
+    @Override
+    public void testApi() {
+        Log.d("test api111:" + NDevices.getInstance().getU1UiDevices().getDisplayWidth());
+        Log.d("test api222:" + NDevices.getInstance().getU1UiDevices().getDisplayHeight());
+    }
 }
