@@ -557,6 +557,36 @@ public class TestServiceImpl implements TestService {
         return this.nDevices.gesture(obj, startPoint1, startPoint2, endPoint1, endPoint2, steps);
     }
 
+    /**
+     * Performs a two-pointer gesture, where each pointer moves diagonally toward the other, from the edges to the center of this UiObject .
+     *
+     * @param obj     the target ui object.
+     * @param percent percentage of the object's diagonal length for the pinch gesture
+     * @param steps   the number of steps for the gesture. Steps are injected about 5 milliseconds apart, so 100 steps may take around 0.5 seconds to complete.
+     * @return true if all touch events for this gesture are injected successfully, false otherwise
+     * @throws UiObjectNotFoundException
+     * @throws NotImplementedException
+     */
+    @Override
+    public boolean pinchIn(Selector obj, int percent, int steps) throws UiObjectNotFoundException, NotImplementedException {
+        return this.nDevices.pinch(obj, percent, steps, "in");
+    }
+
+    /**
+     * Performs a two-pointer gesture, where each pointer moves diagonally opposite across the other, from the center out towards the edges of the this UiObject.
+     *
+     * @param obj     the target ui object.
+     * @param percent percentage of the object's diagonal length for the pinch gesture
+     * @param steps   the number of steps for the gesture. Steps are injected about 5 milliseconds apart, so 100 steps may take around 0.5 seconds to complete.
+     * @return true if all touch events for this gesture are injected successfully, false otherwise
+     * @throws UiObjectNotFoundException
+     * @throws NotImplementedException
+     */
+    @Override
+    public boolean pinchOut(Selector obj, int percent, int steps) throws UiObjectNotFoundException, NotImplementedException {
+        return this.nDevices.pinch(obj, percent, steps, "out");
+    }
+
     @Override
     public void testApi() {
         Log.d("test api111:" + this.nDevices.getU1UiDevices().getDisplayWidth());

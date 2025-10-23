@@ -22,6 +22,8 @@ import com.github.uiautomator.tools.AccessibilityNodeInfoHelper;
 import android.support.test.uiautomator.Until;
 import android.support.test.uiautomator.UiSelector;
 
+import java.util.Objects;
+
 public class NDevices {
 
     private com.android.uiautomator.core.UiDevice u1UiDevice = null;
@@ -622,5 +624,45 @@ public class NDevices {
                 return false;
             }
         }
+    }
+
+    public boolean pinch(Selector obj, int percent, int steps, String corner) {
+        if (this.lastUiInfo == null) {
+            return this.pinch(new com.android.uiautomator.core.UiObject(obj.toU1UiSelector()), percent, steps, corner);
+        } else {
+            percent = (percent < 0) ? 0 : (Math.min(percent, 100));
+            float percentage = percent / 100.0F;
+            AccessibilityNodeInfo node = this.findObject(obj);
+            if (node == null) {
+                Log.e("cannot find node");
+                return false;
+            }
+            Rect rect = this.getVisibleBounds(node);
+            if (rect.width() <= 40)
+                throw new IllegalStateException("Object width is too small for operation");
+            android.graphics.Point startPoint1 = new android.graphics.Point(rect.centerX() - (int) (((float) rect.width() / 2) * percentage), rect.centerY());
+            android.graphics.Point startPoint2 = new android.graphics.Point(rect.centerX() + (int) (((float) rect.width() / 2) * percentage), rect.centerY());
+            android.graphics.Point endPoint1 = new android.graphics.Point(rect.centerX() - 20, rect.centerY());
+            android.graphics.Point endPoint2 = new android.graphics.Point(rect.centerX() + 20, rect.centerY());
+            if (Objects.equals(corner, "in")) {
+                return this.performTwoPointerGesture(startPoint1, startPoint2, endPoint1, endPoint2, steps);
+            } else {
+                return this.performTwoPointerGesture(endPoint1, endPoint2, startPoint1, startPoint2, steps);
+            }
+
+        }
+    }
+
+    private boolean pinch(com.android.uiautomator.core.UiObject obj, int percent, int steps, String corner) {
+        try {
+            if (Objects.equals(corner, "in")) {
+                return obj.pinchIn(percent, steps);
+            } else {
+                return obj.pinchOut(percent, steps);
+            }
+        } catch (Exception e) {
+            Log.e("pinchIn error:" + e);
+        }
+        return false;
     }
 }
