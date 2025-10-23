@@ -6,8 +6,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.graphics.Rect;
+import android.view.MotionEvent;
+
 
 import com.github.uiautomator.stub.ObjInfo;
+import com.github.uiautomator.stub.Point;
 import com.github.uiautomator.stub.Selector;
 import com.github.uiautomator.stub.FakeInstrument;
 import com.github.uiautomator.stub.FakeInstrumentationRegistry;
@@ -17,6 +20,7 @@ import com.github.uiautomator.tools.ReflectionUtils;
 import com.github.uiautomator.tools.AccessibilityNodeInfoHelper;
 
 import android.support.test.uiautomator.Until;
+import android.support.test.uiautomator.UiSelector;
 
 public class NDevices {
 
@@ -88,8 +92,8 @@ public class NDevices {
         return this.API_LEVEL_ACTUAL;
     }
 
-    private AccessibilityNodeInfo findObject(Selector selector) {
-        Log.d("findObject with lastUiInfo");
+    public AccessibilityNodeInfo findObject(Selector selector) {
+        Log.d("use lastUiInfo to find node");
         AccessibilityNodeInfo accessibilityNodeInfo;
         accessibilityNodeInfo = this.queryController.findNodeInRoot(selector.toUiSelector(), this.lastUiInfo);
         if (accessibilityNodeInfo != null) {
@@ -445,6 +449,178 @@ public class NDevices {
                 }
             }
 
+        }
+    }
+
+    public int count(Selector obj) {
+        if (this.lastUiInfo == null) {
+            if ((obj.deepSelector().getMask() & Selector.MASK_INSTANCE) > 0) {
+                if (this.u2UiDevice.findObject(obj.toUiSelector()).exists()) return 1;
+                else return 0;
+            } else {
+                UiSelector sel = obj.toUiSelector();
+                if (!this.u2UiDevice.findObject(sel).exists()) return 0;
+                int low = 1;
+                int high = 2;
+
+                // Note: can not use `sel = sel.instance(high -1)`
+                // because this will change first selector in chain not last.
+                sel = obj.toUiSelector(high - 1);
+                while (this.u2UiDevice.findObject(sel).exists()) {
+                    low = high;
+                    high = high * 2;
+                    sel = obj.toUiSelector(high - 1);
+                }
+                while (high > low + 1) {
+                    int mid = (low + high) / 2;
+                    sel = obj.toUiSelector(mid - 1);
+                    if (this.u2UiDevice.findObject(sel).exists()) low = mid;
+                    else high = mid;
+                }
+                return low;
+            }
+        } else {
+            if ((obj.deepSelector().getMask() & Selector.MASK_INSTANCE) > 0) {
+                AccessibilityNodeInfo node = this.findObject(obj);
+                if (node != null)
+                    return 1;
+                else return 0;
+            } else {
+                if (this.findObject(obj) == null)
+                    return 0;
+                int oldInstance = obj.getInstance();
+                long oldMask = obj.getMask();
+                int low = 1;
+                int high = 2;
+                Selector sel = obj.toSelector(high - 1);
+                while (this.findObject(sel) != null) {
+                    low = high;
+                    high = high * 2;
+                    sel = obj.toSelector(high - 1);
+                }
+                while (high > low + 1) {
+                    int mid = (low + high) / 2;
+                    sel = obj.toSelector(mid - 1);
+                    if (this.findObject(sel) != null) low = mid;
+                    else high = mid;
+                }
+                obj.toSelector(oldInstance, oldMask);
+                return low;
+            }
+        }
+    }
+
+    public ObjInfo[] objInfoOfAllInstances(Selector obj) {
+        int total = count(obj);
+        ObjInfo[] objects = new ObjInfo[total];
+        if (this.lastUiInfo == null) {
+            if ((obj.getMask() & Selector.MASK_INSTANCE) > 0 && total > 0) {
+                try {
+                    objects[0] = objInfo(obj);
+                } catch (Exception e) {
+                    Log.e("UiObjectNotFoundException1:" + e);
+                }
+            } else {
+                UiSelector sel = obj.toUiSelector();
+                for (int i = 0; i < total; i++) {
+                    try {
+                        objects[i] = ObjInfo.getObjInfo(this.u2UiDevice.findObject(sel.instance(i)));
+                        Log.d("3");
+                    } catch (Exception e) {
+                        Log.e("UiObjectNotFoundException2:" + i + ":" + e);
+                    }
+                }
+            }
+        } else {
+            int oldInstance = obj.getInstance();
+            long oldMask = obj.getMask();
+            for (int i = 0; i < total; i++) {
+                try {
+                    Selector sel = obj.toSelector(i);
+                    AccessibilityNodeInfo node = this.findObject(sel);
+                    if (node != null) {
+                        objects[i] = ObjInfo.getObjInfo(node);
+                    } else {
+                        objects[i] = null;
+                    }
+                } catch (Exception e) {
+                    Log.e("UiObjectNotFoundException2:" + i + ":" + e);
+                }
+            }
+            obj.toSelector(oldInstance, oldMask);
+        }
+        return objects;
+    }
+
+    public boolean performTwoPointerGesture(android.graphics.Point startPoint1, android.graphics.Point startPoint2, android.graphics.Point endPoint1, android.graphics.Point endPoint2, int steps) {
+        if (steps == 0)
+            steps = 1;
+        float stepX1 = ((float) (endPoint1.x - startPoint1.x) / steps);
+        float stepY1 = ((float) (endPoint1.y - startPoint1.y) / steps);
+        float stepX2 = ((float) (endPoint2.x - startPoint2.x) / steps);
+        float stepY2 = ((float) (endPoint2.y - startPoint2.y) / steps);
+        int eventX1 = startPoint1.x;
+        int eventY1 = startPoint1.y;
+        int eventX2 = startPoint2.x;
+        int eventY2 = startPoint2.y;
+        MotionEvent.PointerCoords[] points1 = new MotionEvent.PointerCoords[steps + 2];
+        MotionEvent.PointerCoords[] points2 = new MotionEvent.PointerCoords[steps + 2];
+        for (int i = 0; i < steps + 1; i++) {
+            MotionEvent.PointerCoords pointerCoords1 = new MotionEvent.PointerCoords();
+            pointerCoords1.x = eventX1;
+            pointerCoords1.y = eventY1;
+            pointerCoords1.pressure = 1.0F;
+            pointerCoords1.size = 1.0F;
+            points1[i] = pointerCoords1;
+            MotionEvent.PointerCoords pointerCoords2 = new MotionEvent.PointerCoords();
+            pointerCoords2.x = eventX2;
+            pointerCoords2.y = eventY2;
+            pointerCoords2.pressure = 1.0F;
+            pointerCoords2.size = 1.0F;
+            points2[i] = pointerCoords2;
+            eventX1 = (int) (eventX1 + stepX1);
+            eventY1 = (int) (eventY1 + stepY1);
+            eventX2 = (int) (eventX2 + stepX2);
+            eventY2 = (int) (eventY2 + stepY2);
+        }
+        MotionEvent.PointerCoords p1 = new MotionEvent.PointerCoords();
+        p1.x = endPoint1.x;
+        p1.y = endPoint1.y;
+        p1.pressure = 1.0F;
+        p1.size = 1.0F;
+        points1[steps + 1] = p1;
+        MotionEvent.PointerCoords p2 = new MotionEvent.PointerCoords();
+        p2.x = endPoint2.x;
+        p2.y = endPoint2.y;
+        p2.pressure = 1.0F;
+        p2.size = 1.0F;
+        points2[steps + 1] = p2;
+        return this.performMultiPointerGesture(new MotionEvent.PointerCoords[][]{points1, points2});
+    }
+
+    public boolean performMultiPointerGesture(MotionEvent.PointerCoords[]... touches) {
+        return this.interactionController.performMultiPointerGesture(touches);
+    }
+
+    public boolean gesture(Selector obj, Point startPoint1, Point startPoint2, Point endPoint1, Point endPoint2, int steps) {
+        if (this.lastUiInfo == null) {
+            return this.u2UiDevice.findObject(obj.toUiSelector()).performTwoPointerGesture(startPoint1.toPoint(),
+                    startPoint2.toPoint(),
+                    endPoint1.toPoint(),
+                    endPoint2.toPoint(),
+                    steps);
+        } else {
+            AccessibilityNodeInfo node = this.findObject(obj);
+            if (node != null) {
+                return this.performTwoPointerGesture(
+                        startPoint1.toPoint(),
+                        startPoint2.toPoint(),
+                        endPoint1.toPoint(),
+                        endPoint2.toPoint(), steps);
+            } else {
+                Log.e("cannot find node");
+                return false;
+            }
         }
     }
 }

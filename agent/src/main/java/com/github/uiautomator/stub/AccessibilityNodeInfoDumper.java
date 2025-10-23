@@ -30,10 +30,7 @@ import java.util.Set;
 class AccessibilityNodeInfoDumper {
 
     private static final String TAG = AccessibilityNodeInfoDumper.class.getSimpleName();
-    private static final String[] NAF_EXCLUDED_CLASSES = new String[]{
-            android.widget.GridView.class.getName(), android.widget.GridLayout.class.getName(),
-            android.widget.ListView.class.getName(), android.widget.TableLayout.class.getName()
-    };
+    private static final String[] NAF_EXCLUDED_CLASSES = new String[]{android.widget.GridView.class.getName(), android.widget.GridLayout.class.getName(), android.widget.ListView.class.getName(), android.widget.TableLayout.class.getName()};
 
     private AccessibilityNodeInfoDumper() {
     }
@@ -52,9 +49,31 @@ class AccessibilityNodeInfoDumper {
             serializer.attribute("", "rotation", Integer.toString(i));
         }
         for (AccessibilityNodeInfo root : accessibilityNodeInfos) {
-            dumpNodeRec(root, serializer, 0, u1UiDevice.getDisplayWidth(),
-                    u1UiDevice.getDisplayHeight(), maxDepth);
+            dumpNodeRec(root, serializer, 0, u1UiDevice.getDisplayWidth(), u1UiDevice.getDisplayHeight(), maxDepth);
         }
+    }
+
+    public static void dumpWindowHierarchy(AccessibilityNodeInfo[] accessibilityNodeInfos, OutputStream out, int maxDepth, Selector selector) throws UiAutomator2Exception, IOException {
+        XmlSerializer serializer = Xml.newSerializer();
+        serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+        serializer.setOutput(out, "UTF-8");
+        serializer.startDocument("UTF-8", true);
+        serializer.startTag("", "hierarchy"); // TODO(allenhair): Should we use a namespace?
+        com.android.uiautomator.core.UiDevice u1UiDevice = NDevices.getInstance().getU1UiDevices();
+        if (Build.VERSION.SDK_INT >= 18) {
+            int i = u1UiDevice.getDisplayWidth() > u1UiDevice.getDisplayHeight() ? 1 : 0;
+            serializer.attribute("", "rotation", Integer.toString(i));
+        }
+        AccessibilityNodeInfo realAccessibilityNodeInfo = null;
+        for (AccessibilityNodeInfo root : accessibilityNodeInfos) {
+            NDevices.getInstance().refreshUI(root);
+            if (NDevices.getInstance().findObject(selector) != null) {
+                com.github.uiautomator.stub.Log.d(root.toString() + "|find selector:" + selector);
+                realAccessibilityNodeInfo = root;
+            }
+            dumpNodeRec(root, serializer, 0, u1UiDevice.getDisplayWidth(), u1UiDevice.getDisplayHeight(), maxDepth);
+        }
+        NDevices.getInstance().refreshUI(realAccessibilityNodeInfo == null ? accessibilityNodeInfos[0] : realAccessibilityNodeInfo);
     }
 
     public static void dumpWindowHierarchy(UiDevice device, OutputStream out, int maxDepth) throws IOException {
@@ -85,8 +104,7 @@ class AccessibilityNodeInfoDumper {
         serializer.attribute("", "rotation", Integer.toString(device.getDisplayRotation()));
 
         for (AccessibilityNodeInfo root : getWindowRoots(device)) {
-            dumpNodeRec(root, serializer, 0, device.getDisplayWidth(),
-                    device.getDisplayHeight(), maxDepth);
+            dumpNodeRec(root, serializer, 0, device.getDisplayWidth(), device.getDisplayHeight(), maxDepth);
         }
 
         serializer.endTag("", "hierarchy");
@@ -125,8 +143,7 @@ class AccessibilityNodeInfoDumper {
         // Support multi-display searches for API level 30 and up.
         if (Build.VERSION.SDK_INT >= 30) {
             final List<AccessibilityWindowInfo> windowList = new ArrayList<>();
-            final SparseArray<List<AccessibilityWindowInfo>> allWindows =
-                    uiAutomation.getWindowsOnAllDisplays();
+            final SparseArray<List<AccessibilityWindowInfo>> allWindows = uiAutomation.getWindowsOnAllDisplays();
             //AccessibilityNodeInfoHelper.Api30Impl.getWindowsOnAllDisplays(uiAutomation);
             for (int index = 0; index < allWindows.size(); index++) {
                 windowList.addAll(allWindows.valueAt(index));
@@ -137,8 +154,7 @@ class AccessibilityNodeInfoDumper {
         //return AccessibilityNodeInfoHelper.Api21Impl.getWindows(uiAutomation);
     }
 
-    private static void dumpNodeRec(AccessibilityNodeInfo node, XmlSerializer serializer, int index,
-                                    int width, int height, int maxDepth) throws IOException {
+    private static void dumpNodeRec(AccessibilityNodeInfo node, XmlSerializer serializer, int index, int width, int height, int maxDepth) throws IOException {
         serializer.startTag("", "node");
         if (!nafExcludedClass(node) && !nafCheck(node))
             serializer.attribute("", "NAF", Boolean.toString(true));
@@ -165,18 +181,15 @@ class AccessibilityNodeInfoDumper {
         serializer.attribute("", "password", Boolean.toString(node.isPassword()));
         serializer.attribute("", "selected", Boolean.toString(node.isSelected()));
         serializer.attribute("", "visible-to-user", Boolean.toString(node.isVisibleToUser()));
-        serializer.attribute("", "bounds", AccessibilityNodeInfoHelper.getVisibleBoundsInScreen(
-                node, width, height, false).toShortString());
+        serializer.attribute("", "bounds", AccessibilityNodeInfoHelper.getVisibleBoundsInScreen(node, width, height, false).toShortString());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            serializer.attribute("", "drawing-order",
-                    Integer.toString(Api24Impl.getDrawingOrder(node)));
+            serializer.attribute("", "drawing-order", Integer.toString(Api24Impl.getDrawingOrder(node)));
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             serializer.attribute("", "hint", safeCharSeqToString(Api26Impl.getHintText(node)));
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            serializer.attribute("", "display-id",
-                    Integer.toString(Api30Impl.getDisplayId(node)));
+            serializer.attribute("", "display-id", Integer.toString(Api30Impl.getDisplayId(node)));
         }
         if (maxDepth > 0) {
             int count = node.getChildCount();
@@ -208,8 +221,7 @@ class AccessibilityNodeInfoDumper {
     private static boolean nafExcludedClass(AccessibilityNodeInfo node) {
         String className = safeCharSeqToString(node.getClassName());
         for (String excludedClassName : NAF_EXCLUDED_CLASSES) {
-            if (className.endsWith(excludedClassName))
-                return true;
+            if (className.endsWith(excludedClassName)) return true;
         }
         return false;
     }
@@ -225,12 +237,9 @@ class AccessibilityNodeInfoDumper {
      * @return false if a node fails the check, true if all is OK
      */
     private static boolean nafCheck(AccessibilityNodeInfo node) {
-        boolean isNaf = node.isClickable() && node.isEnabled()
-                && safeCharSeqToString(node.getContentDescription()).isEmpty()
-                && safeCharSeqToString(node.getText()).isEmpty();
+        boolean isNaf = node.isClickable() && node.isEnabled() && safeCharSeqToString(node.getContentDescription()).isEmpty() && safeCharSeqToString(node.getText()).isEmpty();
 
-        if (!isNaf)
-            return true;
+        if (!isNaf) return true;
 
         // check children since sometimes the containing element is clickable
         // and NAF but a child's text or description is available. Will assume
@@ -257,8 +266,7 @@ class AccessibilityNodeInfoDumper {
             if (childNode == null) {
                 continue;
             }
-            if (!safeCharSeqToString(childNode.getContentDescription()).isEmpty()
-                    || !safeCharSeqToString(childNode.getText()).isEmpty()) {
+            if (!safeCharSeqToString(childNode.getContentDescription()).isEmpty() || !safeCharSeqToString(childNode.getText()).isEmpty()) {
                 return true;
             }
 
@@ -279,14 +287,7 @@ class AccessibilityNodeInfoDumper {
         for (int i = 0; i < cs.length(); i++) {
             ch = cs.charAt(i);
             // http://www.w3.org/TR/xml11/#charsets
-            if ((ch >= 0x0 && ch <= 0x8)
-                    || (ch >= 0xB && ch <= 0xC)
-                    || (ch >= 0xE && ch <= 0x1F)
-                    || (ch >= 0x7F && ch <= 0x84)
-                    || (ch >= 0x86 && ch <= 0x9F)
-                    || (ch >= 0xD800 && ch <= 0xDFFF)
-                    || (ch >= 0xFDD0 && ch <= 0xFDDF)
-                    || (ch >= 0xFFFE && ch <= 0xFFFF)) {
+            if ((ch >= 0x0 && ch <= 0x8) || (ch >= 0xB && ch <= 0xC) || (ch >= 0xE && ch <= 0x1F) || (ch >= 0x7F && ch <= 0x84) || (ch >= 0x86 && ch <= 0x9F) || (ch >= 0xD800 && ch <= 0xDFFF) || (ch >= 0xFDD0 && ch <= 0xFDDF) || (ch >= 0xFFFE && ch <= 0xFFFF)) {
                 ret.append(".");
             } else {
                 ret.append(ch);
@@ -326,8 +327,7 @@ class AccessibilityNodeInfoDumper {
         //        @DoNotInline
         static int getDisplayId(AccessibilityNodeInfo accessibilityNodeInfo) {
             AccessibilityWindowInfo accessibilityWindowInfo = accessibilityNodeInfo.getWindow();
-            return accessibilityWindowInfo == null ? Display.DEFAULT_DISPLAY :
-                    accessibilityWindowInfo.getDisplayId();
+            return accessibilityWindowInfo == null ? Display.DEFAULT_DISPLAY : accessibilityWindowInfo.getDisplayId();
         }
     }
 }

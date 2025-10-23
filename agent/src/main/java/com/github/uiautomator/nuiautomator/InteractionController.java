@@ -4,7 +4,7 @@ import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.InputEvent;
 import android.view.KeyCharacterMap;
-import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.MotionEvent;
 
 import com.github.uiautomator.tools.ReflectionUtils;
 
@@ -60,11 +60,30 @@ public class InteractionController {
 
     public boolean swipe(int downX, int downY, int upX, int upY, int steps) {
         return ((Boolean) ReflectionUtils.invoke(ReflectionUtils.method("android.support.test.uiautomator.InteractionController", "swipe", new Class[]{int.class, int.class, int.class, int.class, int.class}), this.interactionController, new Object[]{Integer.valueOf(downX), Integer.valueOf(downY), Integer.valueOf(upX), Integer.valueOf(upY), Integer.valueOf(steps)})).booleanValue();
-
     }
 
     public boolean swipe(int downX, int downY, int upX, int upY, int steps, boolean drag) {
-        return ((Boolean) ReflectionUtils.invoke(ReflectionUtils.method("android.support.test.uiautomator.InteractionController", "swipe", new Class[]{int.class, int.class, int.class, int.class, int.class, boolean.class}), this.interactionController, new Object[]{Integer.valueOf(downX), Integer.valueOf(downY), Integer.valueOf(upX), Integer.valueOf(upY), Integer.valueOf(steps), Boolean.valueOf(drag)})).booleanValue();
+        return ((Boolean) ReflectionUtils.invoke(
+                ReflectionUtils.method(
+                        "android.support.test.uiautomator.InteractionController",
+                        "swipe", new Class[]
+                                {
+                                        int.class, int.class, int.class, int.class, int.class, boolean.class
+                                }
+                ), this.interactionController,
+                new Object[]{Integer.valueOf(downX), Integer.valueOf(downY), Integer.valueOf(upX), Integer.valueOf(upY), Integer.valueOf(steps), Boolean.valueOf(drag)})).booleanValue();
+    }
 
+    public boolean performMultiPointerGesture(MotionEvent.PointerCoords[]... touches) {
+        return ((Boolean) ReflectionUtils.invoke(
+                ReflectionUtils.method(
+                        "android.support.test.uiautomator.InteractionController",
+                        "performMultiPointerGesture", new Class[]
+                                {
+                                        MotionEvent.PointerCoords[][].class
+                                }
+                ),
+                this.interactionController,
+                new Object[]{touches})).booleanValue();
     }
 }

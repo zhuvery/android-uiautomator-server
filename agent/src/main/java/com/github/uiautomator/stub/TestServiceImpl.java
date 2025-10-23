@@ -69,11 +69,15 @@ public class TestServiceImpl implements TestService {
         return dumpWindowHierarchy(compressed, 50);
     }
 
-    private String commonDumpWindowHierarchy(boolean compressed, int maxDepth, AccessibilityNodeInfo[] accessibilityNodeInfos) {
+    private String commonDumpWindowHierarchy(boolean compressed, int maxDepth, AccessibilityNodeInfo[] accessibilityNodeInfos, Selector selector) {
         ReflectionUtils.clearAccessibilityCache();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
-            AccessibilityNodeInfoDumper.dumpWindowHierarchy(accessibilityNodeInfos, os, maxDepth);
+            if (selector == null) {
+                AccessibilityNodeInfoDumper.dumpWindowHierarchy(accessibilityNodeInfos, os, maxDepth);
+            } else {
+                AccessibilityNodeInfoDumper.dumpWindowHierarchy(accessibilityNodeInfos, os, maxDepth, selector);
+            }
             return os.toString("UTF-8");
         } catch (Exception e) {
             Log.d("dumpWindowHierarchy got Exception: " + e);
@@ -88,18 +92,22 @@ public class TestServiceImpl implements TestService {
         }
     }
 
+    @Override
+    public String dumpWindowHierarchyWithSelector(boolean compressed, Selector selector) {
+        return this.commonDumpWindowHierarchy(compressed, 50, XMLHierarchy.getRootAccessibilityNode(), selector);
+    }
+
     // 这里是把当前界面所有的树都dump出来了
     @Override
     public String dumpAllWindowHierarchy(boolean compressed) {
         // 默认层数是50层
-        return this.commonDumpWindowHierarchy(compressed, 50, XMLHierarchy.getRootAccessibilityNode());
+        return this.commonDumpWindowHierarchy(compressed, 50, XMLHierarchy.getRootAccessibilityNode(), null);
     }
 
 
     @Override
     public String dumpWindowHierarchy(boolean compressed, int maxDepth) {
-
-        return this.commonDumpWindowHierarchy(compressed, maxDepth, XMLHierarchy.getCurstomRootAccessibilityNode());
+        return this.commonDumpWindowHierarchy(compressed, maxDepth, XMLHierarchy.getCurstomRootAccessibilityNode(), null);
     }
 
     /**
@@ -508,6 +516,45 @@ public class TestServiceImpl implements TestService {
     @Override
     public ObjInfo objInfo(Selector obj) throws UiObjectNotFoundException {
         return this.nDevices.objInfo(obj);
+    }
+
+    /**
+     * Get the count of the UiObject instances by the selector
+     *
+     * @param obj the selector of the ui object
+     * @return the count of instances.
+     */
+    @Override
+    public int count(Selector obj) {
+        return this.nDevices.count(obj);
+    }
+
+    /**
+     * Get the info of all instance by the selector.
+     *
+     * @param obj the selector of ui object.
+     * @return array of object info.
+     */
+    @Override
+    public ObjInfo[] objInfoOfAllInstances(Selector obj) {
+        return this.nDevices.objInfoOfAllInstances(obj);
+    }
+
+    /**
+     * Generates a two-pointer gesture with arbitrary starting and ending points.
+     *
+     * @param obj         the target ui object. ??
+     * @param startPoint1 start point of pointer 1
+     * @param startPoint2 start point of pointer 2
+     * @param endPoint1   end point of pointer 1
+     * @param endPoint2   end point of pointer 2
+     * @param steps       the number of steps for the gesture. Steps are injected about 5 milliseconds apart, so 100 steps may take around 0.5 seconds to complete.
+     * @return true if all touch events for this gesture are injected successfully, false otherwise
+     * @throws UiObjectNotFoundException
+     */
+    @Override
+    public boolean gesture(Selector obj, Point startPoint1, Point startPoint2, Point endPoint1, Point endPoint2, int steps) throws UiObjectNotFoundException, NotImplementedException {
+        return this.nDevices.gesture(obj, startPoint1, startPoint2, endPoint1, endPoint2, steps);
     }
 
     @Override

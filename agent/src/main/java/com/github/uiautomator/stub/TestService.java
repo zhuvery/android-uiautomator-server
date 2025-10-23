@@ -23,6 +23,8 @@ public interface TestService {
 
     String dumpWindowHierarchy(boolean compressed, int maxDepth);
 
+    String dumpWindowHierarchyWithSelector(boolean paramBoolean, Selector paramSelector);
+
     @JsonRpcErrors({@JsonRpcError(code = -32002, exception = UiObjectNotFoundException.class)})
     String getText(Selector paramSelector) throws UiObjectNotFoundException;
 
@@ -257,6 +259,38 @@ public interface TestService {
      */
     @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
     ObjInfo objInfo(Selector obj) throws UiObjectNotFoundException;
+
+    /**
+     * Get the count of the UiObject instances by the selector
+     *
+     * @param obj the selector of the ui object
+     * @return the count of instances.
+     */
+    int count(Selector obj);
+
+    /**
+     * Get the info of all instance by the selector.
+     *
+     * @param obj the selector of ui object.
+     * @return array of object info.
+     */
+    ObjInfo[] objInfoOfAllInstances(Selector obj);
+
+    /**
+     * Generates a two-pointer gesture with arbitrary starting and ending points.
+     *
+     * @param obj         the target ui object. ??
+     * @param startPoint1 start point of pointer 1
+     * @param startPoint2 start point of pointer 2
+     * @param endPoint1   end point of pointer 1
+     * @param endPoint2   end point of pointer 2
+     * @param steps       the number of steps for the gesture. Steps are injected about 5 milliseconds apart, so 100 steps may take around 0.5 seconds to complete.
+     * @return true if all touch events for this gesture are injected successfully, false otherwise
+     * @throws UiObjectNotFoundException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2), @JsonRpcError(exception = NotImplementedException.class, code = ERROR_CODE_BASE - 3)})
+    boolean gesture(Selector obj, Point startPoint1, Point startPoint2, Point endPoint1, Point endPoint2, int steps) throws UiObjectNotFoundException, NotImplementedException;
+
 
     void testApi();
 }

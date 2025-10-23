@@ -330,7 +330,6 @@ public class Selector {
         // remember last value
         int oldInstance = sel.getInstance();
         long oldMask = sel.getMask();
-
         sel.setMask(sel.getMask() | Selector.MASK_INSTANCE);
         sel.setInstance(instance);
         UiSelector uiSelector = this.toUiSelector();
@@ -338,6 +337,20 @@ public class Selector {
         sel.setInstance(oldInstance);
         sel.setMask(oldMask);
         return uiSelector;
+    }
+
+    public Selector toSelector(int instance) {
+        Selector sel = this.deepSelector();
+        sel.setMask(sel.getMask() | Selector.MASK_INSTANCE);
+        sel.setInstance(instance);
+        return sel;
+    }
+
+    public Selector toSelector(int instance, long mask) {
+        Selector sel = this.deepSelector();
+        sel.setMask(mask | Selector.MASK_INSTANCE);
+        sel.setInstance(instance);
+        return sel;
     }
 
     public String getText() {
