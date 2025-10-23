@@ -665,4 +665,103 @@ public class NDevices {
         }
         return false;
     }
+
+    public boolean swipeUp(AccessibilityNodeInfo node, int steps, float percentage) {
+        Rect rect = getVisibleBounds(node);
+        if (rect.height() <= 10)
+            return false;
+        int tmp = percentage == 1.0F ? (rect.top + 5) : (int) (rect.height() * percentage);
+        return this.interactionController.swipe(rect.centerX(), rect.bottom - 5, rect.centerX(), tmp, steps);
+    }
+
+    public boolean swipeDown(AccessibilityNodeInfo node, int steps, float percentage) {
+        Rect rect = getVisibleBounds(node);
+        if (rect.height() <= 10)
+            return false;
+        int tmp = percentage == 1.0F ? (rect.bottom - 5) : (int) (rect.height() * percentage);
+        return this.interactionController.swipe(rect.centerX(), rect.top + 5, rect.centerX(), tmp, steps);
+    }
+
+    public boolean swipeLeft(AccessibilityNodeInfo node, int steps, float percentage) {
+        Rect rect = getVisibleBounds(node);
+        if (rect.height() <= 10)
+            return false;
+        int tmp = percentage == 1.0F ? (rect.left + 5) : (int) (rect.width() * percentage);
+        return this.interactionController.swipe(rect.right - 5, rect.centerY(), tmp, rect.centerY(), steps);
+    }
+
+    public boolean swipeRight(AccessibilityNodeInfo node, int steps, float percentage) {
+        Rect rect = getVisibleBounds(node);
+        if (rect.height() <= 10)
+            return false;
+        int tmp = percentage == 1.0F ? (rect.right - 5) : (int) (rect.width() * percentage);
+        return this.interactionController.swipe(rect.left + 5, rect.centerY(), tmp, rect.centerY(), steps);
+    }
+
+
+    public boolean swipe(Selector obj, String dir, int steps) {
+        if (this.lastUiInfo == null) {
+            com.android.uiautomator.core.UiObject item = new com.android.uiautomator.core.UiObject(obj.toU1UiSelector());
+            dir = dir.toLowerCase();
+            boolean result = false;
+            try {
+                if ("u".equals(dir) || "up".equals(dir)) result = item.swipeUp(steps);
+                else if ("d".equals(dir) || "down".equals(dir)) result = item.swipeDown(steps);
+                else if ("l".equals(dir) || "left".equals(dir)) result = item.swipeLeft(steps);
+                else if ("r".equals(dir) || "right".equals(dir)) result = item.swipeRight(steps);
+                return result;
+            } catch (Exception e) {
+                Log.e("swipe error:" + e);
+            }
+        } else {
+            AccessibilityNodeInfo node = this.findObject(obj);
+            if (node == null) {
+                Log.e("cannot find node");
+                return false;
+            }
+            boolean result = false;
+            if ("u".equals(dir) || "up".equals(dir)) result = this.swipeUp(node, steps, 1.0F);
+            else if ("d".equals(dir) || "down".equals(dir)) result = this.swipeDown(node, steps, 1.0F);
+            else if ("l".equals(dir) || "left".equals(dir)) result = this.swipeLeft(node, steps, 1.0F);
+            else if ("r".equals(dir) || "right".equals(dir)) result = this.swipeRight(node, steps, 1.0F);
+            return result;
+        }
+        return false;
+    }
+
+    public boolean swipe(Selector obj, String dir, float percent, int steps) {
+        percent = (percent < 0) ? 0 : (Math.min(percent, 100));
+        float percentage = percent / 100.0F;
+        if (this.lastUiInfo == null) {
+            com.android.uiautomator.core.UiObject item = new com.android.uiautomator.core.UiObject(obj.toU1UiSelector());
+            android.graphics.Rect rect = null;
+            try {
+                rect = item.getVisibleBounds();
+            } catch (Exception e) {
+                Log.e("swipe getVisibleBounds error:" + e);
+            }
+            dir = dir.toLowerCase();
+            if ("u".equals(dir) || "up".equals(dir))
+                return this.interactionController.swipe(rect.centerX(), rect.bottom - 5, rect.centerX(), (int) (rect.height() * percentage), steps);
+            else if ("d".equals(dir) || "down".equals(dir))
+                return this.interactionController.swipe(rect.centerX(), rect.top + 5, rect.centerX(), (int) (rect.height() * percentage), steps);
+            else if ("l".equals(dir) || "left".equals(dir))
+                return this.interactionController.swipe(rect.right - 5, rect.centerY(), (int) (rect.width() * percentage), rect.centerY(), steps);
+            else if ("r".equals(dir) || "right".equals(dir))
+                return this.interactionController.swipe(rect.left + 5, rect.centerY(), (int) (rect.width() * percentage), rect.centerY(), steps);
+        } else {
+            AccessibilityNodeInfo node = this.findObject(obj);
+            if (node == null) {
+                Log.e("cannot find node");
+                return false;
+            }
+            boolean result = false;
+            if ("u".equals(dir) || "up".equals(dir)) result = this.swipeUp(node, steps, percentage);
+            else if ("d".equals(dir) || "down".equals(dir)) result = this.swipeDown(node, steps, percentage);
+            else if ("l".equals(dir) || "left".equals(dir)) result = this.swipeLeft(node, steps, percentage);
+            else if ("r".equals(dir) || "right".equals(dir)) result = this.swipeRight(node, steps, percentage);
+            return result;
+        }
+        return false;
+    }
 }

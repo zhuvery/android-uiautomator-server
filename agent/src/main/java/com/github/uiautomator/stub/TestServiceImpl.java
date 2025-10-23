@@ -587,6 +587,36 @@ public class TestServiceImpl implements TestService {
         return this.nDevices.pinch(obj, percent, steps, "out");
     }
 
+    /**
+     * Performs the swipe up/down/left/right action on the UiObject
+     *
+     * @param obj   the target ui object.
+     * @param dir   "u"/"up", "d"/"down", "l"/"left", "r"/"right"
+     * @param steps indicates the number of injected move steps into the system. Steps are injected about 5ms apart. So a 100 steps may take about 1/2 second to complete.
+     * @return true of successful
+     * @throws UiObjectNotFoundException
+     */
+    @Override
+    public boolean swipe(Selector obj, String dir, int steps) throws UiObjectNotFoundException {
+        return this.nDevices.swipe(obj, dir, steps);
+    }
+
+
+    /**
+     * Performs the swipe up/down/left/right action on the UiObject
+     *
+     * @param obj     the target ui object.
+     * @param dir     "u"/"up", "d"/"down", "l"/"left", "r"/"right"
+     * @param percent expect value: percent >= 0.0F && percent <= 1.0F,The length of the swipe as a percentage of this object's size.
+     * @param steps   indicates the number of injected move steps into the system. Steps are injected about 5ms apart. So a 100 steps may take about 1/2 second to complete.
+     * @return true of successful
+     * @throws UiObjectNotFoundException
+     */
+    @Override
+    public boolean swipe(Selector obj, String dir, float percent, int steps) throws UiObjectNotFoundException {
+        return this.nDevices.swipe(obj, dir, percent, steps);
+    }
+
     @Override
     public void testApi() {
         Log.d("test api111:" + this.nDevices.getU1UiDevices().getDisplayWidth());

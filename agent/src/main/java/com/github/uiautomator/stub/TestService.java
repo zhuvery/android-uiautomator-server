@@ -317,5 +317,30 @@ public interface TestService {
     @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2), @JsonRpcError(exception = NotImplementedException.class, code = ERROR_CODE_BASE - 3)})
     boolean pinchOut(Selector obj, int percent, int steps) throws UiObjectNotFoundException, NotImplementedException;
 
+    /**
+     * Performs the swipe up/down/left/right action on the UiObject
+     *
+     * @param obj   the target ui object.
+     * @param dir   "u"/"up", "d"/"down", "l"/"left", "r"/"right"
+     * @param steps indicates the number of injected move steps into the system. Steps are injected about 5ms apart. So a 100 steps may take about 1/2 second to complete.
+     * @return true of successful
+     * @throws UiObjectNotFoundException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    boolean swipe(Selector obj, String dir, int steps) throws UiObjectNotFoundException;
+
+    /**
+     * Performs the swipe up/down/left/right action on the UiObject
+     *
+     * @param obj     the target ui object.
+     * @param dir     "u"/"up", "d"/"down", "l"/"left", "r"/"right"
+     * @param percent expect value: percent >= 0.0F && percent <= 1.0F,The length of the swipe as a percentage of this object's size.
+     * @param steps   indicates the number of injected move steps into the system. Steps are injected about 5ms apart. So a 100 steps may take about 1/2 second to complete.
+     * @return true of successful
+     * @throws UiObjectNotFoundException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    boolean swipe(Selector obj, String dir, float percent, int steps) throws UiObjectNotFoundException;
+
     void testApi();
 }
