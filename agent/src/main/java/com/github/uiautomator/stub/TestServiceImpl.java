@@ -15,6 +15,7 @@ import com.github.uiautomator.exceptions.UiAutomator2Exception;
 import com.github.uiautomator.nuiautomator.NDevices;
 import com.github.uiautomator.tools.ReflectionUtils;
 import com.github.uiautomator.tools.XMLHierarchy;
+import com.sun.org.apache.bcel.internal.generic.PUSH;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -312,23 +313,17 @@ public class TestServiceImpl implements TestService {
         key = key.toLowerCase();
         if ("home".equals(key)) result = this.nDevices.getU2UiDevices().pressHome();
         else if ("back".equals(key)) result = this.nDevices.getU2UiDevices().pressBack();
-        else if ("left".equals(key))
-            result = this.nDevices.getU2UiDevices().pressDPadLeft();
-        else if ("right".equals(key))
-            result = this.nDevices.getU2UiDevices().pressDPadRight();
+        else if ("left".equals(key)) result = this.nDevices.getU2UiDevices().pressDPadLeft();
+        else if ("right".equals(key)) result = this.nDevices.getU2UiDevices().pressDPadRight();
         else if ("up".equals(key)) result = this.nDevices.getU2UiDevices().pressDPadUp();
-        else if ("down".equals(key))
-            result = this.nDevices.getU2UiDevices().pressDPadDown();
-        else if ("center".equals(key))
-            result = this.nDevices.getU2UiDevices().pressDPadCenter();
+        else if ("down".equals(key)) result = this.nDevices.getU2UiDevices().pressDPadDown();
+        else if ("center".equals(key)) result = this.nDevices.getU2UiDevices().pressDPadCenter();
         else if ("menu".equals(key)) result = this.nDevices.getU2UiDevices().pressMenu();
-        else if ("search".equals(key))
-            result = this.nDevices.getU2UiDevices().pressSearch();
+        else if ("search".equals(key)) result = this.nDevices.getU2UiDevices().pressSearch();
         else if ("enter".equals(key)) result = this.nDevices.getU2UiDevices().pressEnter();
         else if ("delete".equals(key) || "del".equals(key))
             result = this.nDevices.getU2UiDevices().pressDelete();
-        else if ("recent".equals(key))
-            result = this.nDevices.getU2UiDevices().pressRecentApps();
+        else if ("recent".equals(key)) result = this.nDevices.getU2UiDevices().pressRecentApps();
         else if ("volume_up".equals(key))
             result = this.nDevices.getU2UiDevices().pressKeyCode(KeyEvent.KEYCODE_VOLUME_UP);
         else if ("volume_down".equals(key))
@@ -615,6 +610,106 @@ public class TestServiceImpl implements TestService {
     @Override
     public boolean swipe(Selector obj, String dir, float percent, int steps) throws UiObjectNotFoundException {
         return this.nDevices.swipe(obj, dir, percent, steps);
+    }
+
+    /**
+     * Performs a backwards fling action with the default number of fling steps (5). If the swipe direction is set to vertical, then the swipe will be performed from top to bottom. If the swipe direction is set to horizontal, then the swipes will be performed from left to right. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.
+     *
+     * @param obj        the selector of the scrollable object
+     * @param isVertical vertical or horizontal
+     * @return true if scrolled, and false if can't scroll anymore
+     * @throws UiObjectNotFoundException
+     */
+    @Override
+    public boolean flingBackward(Selector obj, boolean isVertical) throws UiObjectNotFoundException {
+        return this.nDevices.flingBackward(obj, isVertical);
+    }
+
+    @Override
+    public boolean flingForward(Selector obj, boolean isVertical) throws UiObjectNotFoundException {
+        return this.nDevices.flingForward(obj, isVertical);
+    }
+
+    @Override
+    public boolean flingToBeginning(Selector obj, boolean isVertical, int maxSwipes) throws UiObjectNotFoundException {
+        return this.nDevices.flingToBeginning(obj, isVertical, maxSwipes);
+    }
+
+    @Override
+    public boolean flingToEnd(Selector obj, boolean isVertical, int maxSwipes) throws UiObjectNotFoundException {
+        return this.nDevices.flingToEnd(obj, isVertical, maxSwipes);
+    }
+
+    /**
+     * Performs a backward scroll. If the swipe direction is set to vertical, then the swipes will be performed from top to bottom. If the swipe direction is set to horizontal, then the swipes will be performed from left to right. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.
+     *
+     * @param obj        the selector of the scrollable object
+     * @param isVertical vertical or horizontal
+     * @param steps      number of steps. Use this to control the speed of the scroll action.
+     * @return true if scrolled, false if can't scroll anymore
+     * @throws UiObjectNotFoundException
+     */
+    @Override
+    public boolean scrollBackward(Selector obj, boolean isVertical, int steps) throws UiObjectNotFoundException {
+        return this.nDevices.scrollBackward(obj, isVertical, steps);
+    }
+
+    /**
+     * Performs a forward scroll with the default number of scroll steps (55). If the swipe direction is set to vertical, then the swipes will be performed from bottom to top. If the swipe direction is set to horizontal, then the swipes will be performed from right to left. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.
+     *
+     * @param obj        the selector of the scrollable object
+     * @param isVertical vertical or horizontal
+     * @param steps      number of steps. Use this to control the speed of the scroll action.
+     * @return true on scrolled, else false
+     * @throws UiObjectNotFoundException
+     */
+    @Override
+    public boolean scrollForward(Selector obj, boolean isVertical, int steps) throws UiObjectNotFoundException {
+        return this.nDevices.scrollForward(obj, isVertical, steps);
+    }
+
+    /**
+     * Scrolls to the beginning of a scrollable layout element. The beginning can be at the top-most edge in the case of vertical controls, or the left-most edge for horizontal controls. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.
+     *
+     * @param obj        the selector of the scrollable object
+     * @param isVertical vertical or horizontal
+     * @param maxSwipes  max swipes to be performed.
+     * @param steps      use steps to control the speed, so that it may be a scroll, or fling
+     * @return true on scrolled else false
+     * @throws UiObjectNotFoundException
+     */
+    @Override
+    public boolean scrollToBeginning(Selector obj, boolean isVertical, int maxSwipes, int steps) throws UiObjectNotFoundException {
+        return this.nDevices.scrollToBeginning(obj, isVertical, maxSwipes, steps);
+    }
+
+    /**
+     * Scrolls to the end of a scrollable layout element. The end can be at the bottom-most edge in the case of vertical controls, or the right-most edge for horizontal controls. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.
+     *
+     * @param obj        the selector of the scrollable object
+     * @param isVertical vertical or horizontal
+     * @param maxSwipes  max swipes to be performed.
+     * @param steps      use steps to control the speed, so that it may be a scroll, or fling
+     * @return true on scrolled, else false
+     * @throws UiObjectNotFoundException
+     */
+    @Override
+    public boolean scrollToEnd(Selector obj, boolean isVertical, int maxSwipes, int steps) throws UiObjectNotFoundException {
+        return this.nDevices.scrollToEnd(obj, isVertical, maxSwipes, steps);
+    }
+
+    /**
+     * Perform a scroll forward action to move through the scrollable layout element until a visible item that matches the selector is found.
+     *
+     * @param obj        the selector of the scrollable object
+     * @param targetObj  the item matches the selector to be found.
+     * @param isVertical vertical or horizontal
+     * @return true on scrolled, else false
+     * @throws UiObjectNotFoundException
+     */
+    @Override
+    public boolean scrollTo(Selector obj, Selector targetObj, boolean isVertical) throws UiObjectNotFoundException {
+        return this.nDevices.scrollTo(obj, targetObj, isVertical);
     }
 
     @Override

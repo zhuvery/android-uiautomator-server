@@ -342,5 +342,117 @@ public interface TestService {
     @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
     boolean swipe(Selector obj, String dir, float percent, int steps) throws UiObjectNotFoundException;
 
+    /***************************************************************************
+     * Below section contains all methods from UiScrollable.
+     ***************************************************************************/
+
+    /**
+     * Performs a backwards fling action with the default number of fling steps (5). If the swipe direction is set to vertical, then the swipe will be performed from top to bottom. If the swipe direction is set to horizontal, then the swipes will be performed from left to right. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.
+     *
+     * @param obj        the selector of the scrollable object
+     * @param isVertical vertical or horizontal
+     * @return true if scrolled, and false if can't scroll anymore
+     * @throws UiObjectNotFoundException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    boolean flingBackward(Selector obj, boolean isVertical) throws UiObjectNotFoundException;
+
+    /**
+     * Performs a forward fling with the default number of fling steps (5). If the swipe direction is set to vertical, then the swipes will be performed from bottom to top. If the swipe direction is set to horizontal, then the swipes will be performed from right to left. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.
+     *
+     * @param obj        the selector of the scrollable object
+     * @param isVertical vertical or horizontal
+     * @return true if scrolled, and false if can't scroll anymore
+     * @throws UiObjectNotFoundException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    boolean flingForward(Selector obj, boolean isVertical) throws UiObjectNotFoundException;
+
+    /**
+     * Performs a fling gesture to reach the beginning of a scrollable layout element. The beginning can be at the top-most edge in the case of vertical controls, or the left-most edge for horizontal controls. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.
+     *
+     * @param obj        the selector of the scrollable object
+     * @param isVertical vertical or horizontal
+     * @param maxSwipes  max swipes to achieve beginning.
+     * @return true on scrolled, else false
+     * @throws UiObjectNotFoundException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    boolean flingToBeginning(Selector obj, boolean isVertical, int maxSwipes) throws UiObjectNotFoundException;
+
+    /**
+     * Performs a fling gesture to reach the end of a scrollable layout element. The end can be at the bottom-most edge in the case of vertical controls, or the right-most edge for horizontal controls. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.
+     *
+     * @param obj        the selector of the scrollable object
+     * @param isVertical vertical or horizontal
+     * @param maxSwipes  max swipes to achieve end.
+     * @return true on scrolled, else false
+     * @throws UiObjectNotFoundException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    boolean flingToEnd(Selector obj, boolean isVertical, int maxSwipes) throws UiObjectNotFoundException;
+
+    /**
+     * Performs a backward scroll. If the swipe direction is set to vertical, then the swipes will be performed from top to bottom. If the swipe direction is set to horizontal, then the swipes will be performed from left to right. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.
+     *
+     * @param obj        the selector of the scrollable object
+     * @param isVertical vertical or horizontal
+     * @param steps      number of steps. Use this to control the speed of the scroll action.
+     * @return true if scrolled, false if can't scroll anymore
+     * @throws UiObjectNotFoundException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    boolean scrollBackward(Selector obj, boolean isVertical, int steps) throws UiObjectNotFoundException;
+
+    /**
+     * Performs a forward scroll with the default number of scroll steps (55). If the swipe direction is set to vertical, then the swipes will be performed from bottom to top. If the swipe direction is set to horizontal, then the swipes will be performed from right to left. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.
+     *
+     * @param obj        the selector of the scrollable object
+     * @param isVertical vertical or horizontal
+     * @param steps      number of steps. Use this to control the speed of the scroll action.
+     * @return true on scrolled, else false
+     * @throws UiObjectNotFoundException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    boolean scrollForward(Selector obj, boolean isVertical, int steps) throws UiObjectNotFoundException;
+
+    /**
+     * Scrolls to the beginning of a scrollable layout element. The beginning can be at the top-most edge in the case of vertical controls, or the left-most edge for horizontal controls. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.
+     *
+     * @param obj        the selector of the scrollable object
+     * @param isVertical vertical or horizontal
+     * @param maxSwipes  max swipes to be performed.
+     * @param steps      use steps to control the speed, so that it may be a scroll, or fling
+     * @return true on scrolled else false
+     * @throws UiObjectNotFoundException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    boolean scrollToBeginning(Selector obj, boolean isVertical, int maxSwipes, int steps) throws UiObjectNotFoundException;
+
+    /**
+     * Scrolls to the end of a scrollable layout element. The end can be at the bottom-most edge in the case of vertical controls, or the right-most edge for horizontal controls. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.
+     *
+     * @param obj        the selector of the scrollable object
+     * @param isVertical vertical or horizontal
+     * @param maxSwipes  max swipes to be performed.
+     * @param steps      use steps to control the speed, so that it may be a scroll, or fling
+     * @return true on scrolled, else false
+     * @throws UiObjectNotFoundException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    boolean scrollToEnd(Selector obj, boolean isVertical, int maxSwipes, int steps) throws UiObjectNotFoundException;
+
+    /**
+     * Perform a scroll forward action to move through the scrollable layout element until a visible item that matches the selector is found.
+     *
+     * @param obj        the selector of the scrollable object
+     * @param targetObj  the item matches the selector to be found.
+     * @param isVertical vertical or horizontal
+     * @return true on scrolled, else false
+     * @throws UiObjectNotFoundException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    boolean scrollTo(Selector obj, Selector targetObj, boolean isVertical) throws UiObjectNotFoundException;
+
     void testApi();
 }

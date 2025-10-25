@@ -86,4 +86,17 @@ public class InteractionController {
                 this.interactionController,
                 new Object[]{touches})).booleanValue();
     }
+
+    public boolean scrollSwipe(int downX, int downY, int upX, int upY, int steps) {
+        return ((Boolean) ReflectionUtils.invoke(
+                ReflectionUtils.method(
+                        "android.support.test.uiautomator.InteractionController",
+                        "scrollSwipe", new Class[]
+                                {
+                                        int.class, int.class, int.class, int.class, int.class
+                                }
+                ),
+                this.interactionController,
+                new Object[]{Integer.valueOf(downX), Integer.valueOf(downY), Integer.valueOf(upX), Integer.valueOf(upY), Integer.valueOf(steps)})).booleanValue();
+    }
 }

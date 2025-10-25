@@ -484,12 +484,10 @@ public class NDevices {
         } else {
             if ((obj.deepSelector().getMask() & Selector.MASK_INSTANCE) > 0) {
                 AccessibilityNodeInfo node = this.findObject(obj);
-                if (node != null)
-                    return 1;
+                if (node != null) return 1;
                 else return 0;
             } else {
-                if (this.findObject(obj) == null)
-                    return 0;
+                if (this.findObject(obj) == null) return 0;
                 int oldInstance = obj.getInstance();
                 long oldMask = obj.getMask();
                 int low = 1;
@@ -555,8 +553,7 @@ public class NDevices {
     }
 
     public boolean performTwoPointerGesture(android.graphics.Point startPoint1, android.graphics.Point startPoint2, android.graphics.Point endPoint1, android.graphics.Point endPoint2, int steps) {
-        if (steps == 0)
-            steps = 1;
+        if (steps == 0) steps = 1;
         float stepX1 = ((float) (endPoint1.x - startPoint1.x) / steps);
         float stepY1 = ((float) (endPoint1.y - startPoint1.y) / steps);
         float stepX2 = ((float) (endPoint2.x - startPoint2.x) / steps);
@@ -606,19 +603,11 @@ public class NDevices {
 
     public boolean gesture(Selector obj, Point startPoint1, Point startPoint2, Point endPoint1, Point endPoint2, int steps) {
         if (this.lastUiInfo == null) {
-            return this.u2UiDevice.findObject(obj.toUiSelector()).performTwoPointerGesture(startPoint1.toPoint(),
-                    startPoint2.toPoint(),
-                    endPoint1.toPoint(),
-                    endPoint2.toPoint(),
-                    steps);
+            return this.u2UiDevice.findObject(obj.toUiSelector()).performTwoPointerGesture(startPoint1.toPoint(), startPoint2.toPoint(), endPoint1.toPoint(), endPoint2.toPoint(), steps);
         } else {
             AccessibilityNodeInfo node = this.findObject(obj);
             if (node != null) {
-                return this.performTwoPointerGesture(
-                        startPoint1.toPoint(),
-                        startPoint2.toPoint(),
-                        endPoint1.toPoint(),
-                        endPoint2.toPoint(), steps);
+                return this.performTwoPointerGesture(startPoint1.toPoint(), startPoint2.toPoint(), endPoint1.toPoint(), endPoint2.toPoint(), steps);
             } else {
                 Log.e("cannot find node");
                 return false;
@@ -668,32 +657,28 @@ public class NDevices {
 
     public boolean swipeUp(AccessibilityNodeInfo node, int steps, float percentage) {
         Rect rect = getVisibleBounds(node);
-        if (rect.height() <= 10)
-            return false;
+        if (rect.height() <= 10) return false;
         int tmp = percentage == 1.0F ? (rect.top + 5) : (int) (rect.height() * percentage);
         return this.interactionController.swipe(rect.centerX(), rect.bottom - 5, rect.centerX(), tmp, steps);
     }
 
     public boolean swipeDown(AccessibilityNodeInfo node, int steps, float percentage) {
         Rect rect = getVisibleBounds(node);
-        if (rect.height() <= 10)
-            return false;
+        if (rect.height() <= 10) return false;
         int tmp = percentage == 1.0F ? (rect.bottom - 5) : (int) (rect.height() * percentage);
         return this.interactionController.swipe(rect.centerX(), rect.top + 5, rect.centerX(), tmp, steps);
     }
 
     public boolean swipeLeft(AccessibilityNodeInfo node, int steps, float percentage) {
         Rect rect = getVisibleBounds(node);
-        if (rect.height() <= 10)
-            return false;
+        if (rect.height() <= 10) return false;
         int tmp = percentage == 1.0F ? (rect.left + 5) : (int) (rect.width() * percentage);
         return this.interactionController.swipe(rect.right - 5, rect.centerY(), tmp, rect.centerY(), steps);
     }
 
     public boolean swipeRight(AccessibilityNodeInfo node, int steps, float percentage) {
         Rect rect = getVisibleBounds(node);
-        if (rect.height() <= 10)
-            return false;
+        if (rect.height() <= 10) return false;
         int tmp = percentage == 1.0F ? (rect.right - 5) : (int) (rect.width() * percentage);
         return this.interactionController.swipe(rect.left + 5, rect.centerY(), tmp, rect.centerY(), steps);
     }
@@ -721,9 +706,12 @@ public class NDevices {
             }
             boolean result = false;
             if ("u".equals(dir) || "up".equals(dir)) result = this.swipeUp(node, steps, 1.0F);
-            else if ("d".equals(dir) || "down".equals(dir)) result = this.swipeDown(node, steps, 1.0F);
-            else if ("l".equals(dir) || "left".equals(dir)) result = this.swipeLeft(node, steps, 1.0F);
-            else if ("r".equals(dir) || "right".equals(dir)) result = this.swipeRight(node, steps, 1.0F);
+            else if ("d".equals(dir) || "down".equals(dir))
+                result = this.swipeDown(node, steps, 1.0F);
+            else if ("l".equals(dir) || "left".equals(dir))
+                result = this.swipeLeft(node, steps, 1.0F);
+            else if ("r".equals(dir) || "right".equals(dir))
+                result = this.swipeRight(node, steps, 1.0F);
             return result;
         }
         return false;
@@ -757,11 +745,265 @@ public class NDevices {
             }
             boolean result = false;
             if ("u".equals(dir) || "up".equals(dir)) result = this.swipeUp(node, steps, percentage);
-            else if ("d".equals(dir) || "down".equals(dir)) result = this.swipeDown(node, steps, percentage);
-            else if ("l".equals(dir) || "left".equals(dir)) result = this.swipeLeft(node, steps, percentage);
-            else if ("r".equals(dir) || "right".equals(dir)) result = this.swipeRight(node, steps, percentage);
+            else if ("d".equals(dir) || "down".equals(dir))
+                result = this.swipeDown(node, steps, percentage);
+            else if ("l".equals(dir) || "left".equals(dir))
+                result = this.swipeLeft(node, steps, percentage);
+            else if ("r".equals(dir) || "right".equals(dir))
+                result = this.swipeRight(node, steps, percentage);
             return result;
         }
         return false;
+    }
+
+    public boolean flingBackward(Selector obj, boolean isVertical) {
+        if (this.lastUiInfo == null) {
+            try {
+                android.support.test.uiautomator.UiScrollable scrollable = new android.support.test.uiautomator.UiScrollable(obj.toUiSelector());
+                if (isVertical) scrollable.setAsVerticalList();
+                else scrollable.setAsHorizontalList();
+                return scrollable.flingBackward();
+            } catch (Exception e) {
+                Log.e("flingBackward error:" + e);
+                return false;
+            }
+        } else {
+            AccessibilityNodeInfo accessibilityNodeInfo = this.findObject(obj);
+            if (accessibilityNodeInfo == null) {
+                Log.e("node is null");
+                return false;
+            }
+            Rect rect = new Rect();
+            accessibilityNodeInfo.getBoundsInScreen(rect);
+            if (isVertical) {
+                int i3 = (int) (rect.height() * 0.1);
+                Log.d("scrollToBegining() using vertical scroll");
+                int n = rect.centerX();
+                int i1 = rect.top + i3;
+                int i2 = rect.centerX();
+                i3 = rect.bottom - i3;
+                return this.interactionController.scrollSwipe(n, i1, i2, i3, 5);
+            }
+            int k = (int) (rect.width() * 0.1);
+            Log.d("scrollToBegining() using hotizontal scroll");
+            int i = rect.left + k;
+            int j = rect.centerY();
+            k = rect.right - k;
+            int m = rect.centerY();
+            return this.interactionController.scrollSwipe(i, j, k, m, 5);
+        }
+    }
+
+    public boolean flingForward(Selector obj, boolean isVertical) {
+        if (this.lastUiInfo == null) {
+            try {
+                android.support.test.uiautomator.UiScrollable scrollable = new android.support.test.uiautomator.UiScrollable(obj.toUiSelector());
+                if (isVertical) scrollable.setAsVerticalList();
+                else scrollable.setAsHorizontalList();
+                return scrollable.flingForward();
+            } catch (Exception e) {
+                Log.e("flingForward error:" + e);
+                return false;
+            }
+        } else {
+            AccessibilityNodeInfo accessibilityNodeInfo = this.findObject(obj);
+            if (accessibilityNodeInfo == null) {
+                Log.e("node is null");
+                return false;
+            }
+            Rect rect = new Rect();
+            accessibilityNodeInfo.getBoundsInScreen(rect);
+            if (isVertical) {
+                int i3 = (int) (rect.height() * 0.1);
+                int n = rect.centerX();
+                int i1 = rect.bottom - i3;
+                int i2 = rect.centerX();
+                i3 = rect.top + i3;
+                return this.interactionController.scrollSwipe(n, i1, i2, i3, 5);
+            }
+            int k = (int) (rect.width() * 0.1);
+            int i = rect.right - k;
+            int j = rect.centerY();
+            k = rect.left + k;
+            int m = rect.centerY();
+            return this.interactionController.scrollSwipe(i, j, k, m, 5);
+        }
+    }
+
+    public boolean flingToBeginning(Selector obj, boolean isVertical, int maxSwipes) {
+        if (this.lastUiInfo == null) {
+            try {
+                android.support.test.uiautomator.UiScrollable scrollable = new android.support.test.uiautomator.UiScrollable(obj.toUiSelector());
+                if (isVertical) scrollable.setAsVerticalList();
+                else scrollable.setAsHorizontalList();
+                return scrollable.flingToBeginning(maxSwipes);
+            } catch (Exception e) {
+                Log.e("flingToBeginning error:" + e);
+                return false;
+            }
+        } else {
+            for (int i = 0; ; i++) {
+                if (i >= maxSwipes || !this.scrollBackward(obj, isVertical, 5)) return true;
+            }
+        }
+    }
+
+    public boolean flingToEnd(Selector obj, boolean isVertical, int maxSwipes) {
+        if (this.lastUiInfo == null) {
+            try {
+                android.support.test.uiautomator.UiScrollable scrollable = new android.support.test.uiautomator.UiScrollable(obj.toUiSelector());
+                if (isVertical) scrollable.setAsVerticalList();
+                else scrollable.setAsHorizontalList();
+                return scrollable.flingToEnd(maxSwipes);
+            } catch (Exception e) {
+                Log.e("flingToEnd error:" + e);
+                return false;
+            }
+        } else {
+            for (int i = 0; ; i++) {
+                if (i >= maxSwipes || !this.scrollForward(obj, isVertical, 5)) return true;
+            }
+        }
+
+    }
+
+    public boolean scrollBackward(Selector obj, boolean isVertical, int step) {
+        if (this.lastUiInfo == null) {
+            try {
+                android.support.test.uiautomator.UiScrollable scrollable = new android.support.test.uiautomator.UiScrollable(obj.toUiSelector());
+                if (isVertical) scrollable.setAsVerticalList();
+                else scrollable.setAsHorizontalList();
+                return scrollable.scrollBackward(step);
+            } catch (Exception e) {
+                Log.e("scrollBackward error:" + e);
+                return false;
+            }
+        } else {
+            AccessibilityNodeInfo accessibilityNodeInfo = this.findObject(obj);
+            if (accessibilityNodeInfo == null) {
+                Log.e("node is null");
+                return false;
+            }
+            Rect rect = new Rect();
+            accessibilityNodeInfo.getBoundsInScreen(rect);
+            if (isVertical) {
+                int i3 = (int) (rect.height() * 0.1);
+                Log.d("scrollToBegining() using vertical scroll");
+                int n = rect.centerX();
+                int i1 = rect.top + i3;
+                int i2 = rect.centerX();
+                i3 = rect.bottom - i3;
+                return this.interactionController.scrollSwipe(n, i1, i2, i3, step);
+            }
+            int k = (int) (rect.width() * 0.1);
+            Log.d("scrollToBegining() using hotizontal scroll");
+            int i = rect.left + k;
+            int j = rect.centerY();
+            k = rect.right - k;
+            int m = rect.centerY();
+            return this.interactionController.scrollSwipe(i, j, k, m, step);
+        }
+    }
+
+    public boolean scrollForward(Selector obj, boolean isVertical, int steps) {
+        if (this.lastUiInfo == null) {
+            try {
+                android.support.test.uiautomator.UiScrollable scrollable = new android.support.test.uiautomator.UiScrollable(obj.toUiSelector());
+                if (isVertical) scrollable.setAsVerticalList();
+                else scrollable.setAsHorizontalList();
+                return scrollable.scrollForward(steps);
+            } catch (Exception e) {
+                Log.e("scrollBackward error:" + e);
+                return false;
+            }
+        } else {
+            AccessibilityNodeInfo accessibilityNodeInfo = this.findObject(obj);
+            if (accessibilityNodeInfo == null) {
+                Log.e("node is null");
+                return false;
+            }
+            Rect rect = new Rect();
+            accessibilityNodeInfo.getBoundsInScreen(rect);
+            if (isVertical) {
+                int i3 = (int) (rect.height() * 0.1);
+                int n = rect.centerX();
+                int i1 = rect.bottom - i3;
+                int i2 = rect.centerX();
+                i3 = rect.top + i3;
+                return this.interactionController.scrollSwipe(n, i1, i2, i3, steps);
+            }
+            int k = (int) (rect.width() * 0.1);
+            int i = rect.right - k;
+            int j = rect.centerY();
+            k = rect.left + k;
+            int m = rect.centerY();
+            return this.interactionController.scrollSwipe(i, j, k, m, steps);
+        }
+    }
+
+    public boolean scrollToBeginning(Selector obj, boolean isVertical, int maxSwipes, int steps) {
+        if (this.lastUiInfo == null) {
+            try {
+                android.support.test.uiautomator.UiScrollable scrollable = new android.support.test.uiautomator.UiScrollable(obj.toUiSelector());
+                if (isVertical) scrollable.setAsVerticalList();
+                else scrollable.setAsHorizontalList();
+                return scrollable.scrollToBeginning(maxSwipes, steps);
+            } catch (Exception e) {
+                Log.e("scrollToBeginning error:" + e);
+            }
+        } else {
+            for (int i = 0; ; i++) {
+                if (i >= maxSwipes || !this.scrollBackward(obj, isVertical, 55))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean scrollToEnd(Selector obj, boolean isVertical, int maxSwipes, int steps) {
+        if (this.lastUiInfo == null) {
+            try {
+                android.support.test.uiautomator.UiScrollable scrollable = new android.support.test.uiautomator.UiScrollable(obj.toUiSelector());
+                if (isVertical) scrollable.setAsVerticalList();
+                else scrollable.setAsHorizontalList();
+                return scrollable.scrollToEnd(maxSwipes, steps);
+            } catch (Exception e) {
+                Log.e("scrollToEnd error:" + e);
+                return false;
+            }
+        } else {
+            for (int i = 0; ; i++) {
+                if (i >= maxSwipes || !this.scrollForward(obj, isVertical, steps))
+                    return true;
+            }
+        }
+    }
+
+    public boolean scrollTo(Selector obj, Selector targetObj, boolean isVertical) {
+        // todo 对于ui缓存存在的时候从缓存里进行计算这部分逻辑有点复杂，暂时还是才走重新dump的吧，后续在补充
+        try {
+            android.support.test.uiautomator.UiScrollable scrollable = new android.support.test.uiautomator.UiScrollable(obj.toUiSelector());
+            if (isVertical) scrollable.setAsVerticalList();
+            else scrollable.setAsHorizontalList();
+            return scrollable.scrollIntoView(targetObj.toUiSelector());
+        } catch (Exception e) {
+            Log.e("scrollTo error:" + e);
+            return false;
+        }
+
+//        if (this.lastUiInfo == null) {
+//            try {
+//                android.support.test.uiautomator.UiScrollable scrollable = new android.support.test.uiautomator.UiScrollable(obj.toUiSelector());
+//                if (isVertical) scrollable.setAsVerticalList();
+//                else scrollable.setAsHorizontalList();
+//                return scrollable.scrollIntoView(targetObj.toUiSelector());
+//            } catch (Exception e) {
+//                Log.e("scrollTo error:" + e);
+//                return false;
+//            }
+//        } else {
+//
+//        }
+//        return false;
     }
 }
