@@ -106,6 +106,18 @@ public class NDevices {
         }
     }
 
+    public AccessibilityNodeInfo findObject(android.support.test.uiautomator.UiSelector uiSelector) {
+        Log.d("use lastUiInfo to find node");
+        AccessibilityNodeInfo accessibilityNodeInfo;
+        accessibilityNodeInfo = this.queryController.findNodeInRoot(uiSelector, this.lastUiInfo);
+        if (accessibilityNodeInfo != null) {
+            return accessibilityNodeInfo;
+        } else {
+            Log.e("accessibilityNodeInfo is null");
+            return null;
+        }
+    }
+
     public String getText(Selector selector) {
         try {
             if (this.lastUiInfo == null) {
@@ -1002,8 +1014,27 @@ public class NDevices {
 //                return false;
 //            }
 //        } else {
-//
+//            android.support.test.uiautomator.UiScrollable scrollable = new android.support.test.uiautomator.UiScrollable(obj.toUiSelector());
+//            if (isVertical) scrollable.setAsVerticalList();
+//            else scrollable.setAsHorizontalList();
+//            android.support.test.uiautomator.UiSelector paramUiSelector = obj.toUiSelector().childSelector(targetObj.toUiSelector());
+//            AccessibilityNodeInfo node = this.findObject(paramUiSelector);
+//            if (node == null) {
+//                int i = 0;
+//                while (i < mMaxSearchSwipes) {
+//                    boolean bool = this.scrollForward();
+//                    if (!exists(paramUiSelector)) {
+//                        if (!bool)
+//                            return false;
+//                        i++;
+//                        continue;
+//                    }
+//                    return true;
+//                }
+//                return false;
+//            } else {
+//                return true;
+//            }
 //        }
-//        return false;
     }
 }
