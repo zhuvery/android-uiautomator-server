@@ -11,12 +11,14 @@ import android.view.MotionEvent;
 
 import com.github.uiautomator.exceptions.UiAutomator2Exception;
 import com.github.uiautomator.stub.AccessibilityNodeInfoDumper;
+import com.github.uiautomator.stub.AutomatorServiceImpl;
 import com.github.uiautomator.stub.ObjInfo;
 import com.github.uiautomator.stub.Point;
 import com.github.uiautomator.stub.Selector;
 import com.github.uiautomator.stub.FakeInstrument;
 import com.github.uiautomator.stub.FakeInstrumentationRegistry;
 import com.github.uiautomator.stub.Log;
+import com.github.uiautomator.stub.TestServiceImpl;
 import com.github.uiautomator.stub.TouchController;
 import com.github.uiautomator.tools.ReflectionUtils;
 import com.github.uiautomator.tools.AccessibilityNodeInfoHelper;
@@ -28,8 +30,26 @@ import android.support.test.uiautomator.UiSelector;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class NDevices {
+
+
+    class ClearUiObjectTimerTask extends TimerTask {
+        String name;
+
+        public ClearUiObjectTimerTask(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public void run() {
+            uiObjects.remove(name);
+        }
+    }
 
     private com.android.uiautomator.core.UiDevice u1UiDevice = null;
     private android.support.test.uiautomator.UiDevice u2UiDevice = null;
@@ -45,6 +65,8 @@ public class NDevices {
     private TouchController touchController = null;
 
     private static NDevices device = null;
+
+    private final ConcurrentHashMap<String, android.support.test.uiautomator.UiObject> uiObjects = new ConcurrentHashMap<>();
 
     private final int API_LEVEL_ACTUAL = Build.VERSION.SDK_INT + ("REL".equals(Build.VERSION.CODENAME) ? 0 : 1);
 
@@ -1052,7 +1074,6 @@ public class NDevices {
         }
     }
 
-
     public String commonDumpWindowHierarchy(boolean compressed, int maxDepth, AccessibilityNodeInfo[] accessibilityNodeInfos, Selector selector) {
         ReflectionUtils.clearAccessibilityCache();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -1073,6 +1094,31 @@ public class NDevices {
                 Log.d("dumpWindowHierarchy got Exception: " + e + "but ignore it");
                 // ignore
             }
+        }
+    }
+
+    private String addUiObject(android.support.test.uiautomator.UiObject obj) {
+        String key = UUID.randomUUID().toString();
+        this.uiObjects.put(key, obj);
+        // schedule the clear timer.
+        Timer clearTimer = new Timer();
+        clearTimer.schedule(new ClearUiObjectTimerTask(key), 60000);
+        return key;
+    }
+
+    //这个方法用得少，所以不用缓存了，太麻烦了
+    public String childByText(Selector collection, Selector child, String text) {
+        try {
+            android.support.test.uiautomator.UiObject obj;
+            if (this.exist(collection) && this.objInfo(collection).isScrollable()) {
+                obj = new android.support.test.uiautomator.UiScrollable(collection.toUiSelector()).getChildByText(child.toUiSelector(), text);
+            } else {
+                obj = new android.support.test.uiautomator.UiCollection(collection.toUiSelector()).getChildByText(child.toUiSelector(), text);
+            }
+            return addUiObject(obj);
+        } catch (Exception e) {
+            Log.e("childByText error:" + e);
+            return "";
         }
     }
 }

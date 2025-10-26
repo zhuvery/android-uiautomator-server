@@ -462,9 +462,9 @@ public interface TestService {
      * @param child      UiSelector selector of the child pattern to match and return
      * @return A string ID represent the returned UiObject.
      */
-//    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
-//    String childByText(Selector collection, Selector child, String text) throws UiObjectNotFoundException;
-//
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    String childByText(Selector collection, Selector child, String text) throws UiObjectNotFoundException;
+
 //    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
 //    String childByText(Selector collection, Selector child, String text, boolean allowScrollSearch) throws UiObjectNotFoundException;
 
