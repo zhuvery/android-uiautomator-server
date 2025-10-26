@@ -8,7 +8,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 
-
 import com.github.uiautomator.exceptions.UiAutomator2Exception;
 import com.github.uiautomator.stub.AccessibilityNodeInfoDumper;
 import com.github.uiautomator.stub.ObjInfo;
