@@ -11,14 +11,12 @@ import android.view.MotionEvent;
 
 import com.github.uiautomator.exceptions.UiAutomator2Exception;
 import com.github.uiautomator.stub.AccessibilityNodeInfoDumper;
-import com.github.uiautomator.stub.AutomatorServiceImpl;
 import com.github.uiautomator.stub.ObjInfo;
 import com.github.uiautomator.stub.Point;
 import com.github.uiautomator.stub.Selector;
 import com.github.uiautomator.stub.FakeInstrument;
 import com.github.uiautomator.stub.FakeInstrumentationRegistry;
 import com.github.uiautomator.stub.Log;
-import com.github.uiautomator.stub.TestServiceImpl;
 import com.github.uiautomator.stub.TouchController;
 import com.github.uiautomator.tools.ReflectionUtils;
 import com.github.uiautomator.tools.AccessibilityNodeInfoHelper;

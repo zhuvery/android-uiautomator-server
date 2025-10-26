@@ -10,11 +10,8 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import com.github.uiautomator.exceptions.NotImplementedException;
-import com.github.uiautomator.exceptions.UiAutomator2Exception;
 import com.github.uiautomator.nuiautomator.NDevices;
-import com.github.uiautomator.tools.ReflectionUtils;
 import com.github.uiautomator.tools.XMLHierarchy;
-import com.sun.org.apache.bcel.internal.generic.PUSH;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
