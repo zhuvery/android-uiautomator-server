@@ -30,6 +30,7 @@ import android.support.test.uiautomator.UiSelector;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -1120,5 +1121,100 @@ public class NDevices {
             Log.e("childByText error:" + e);
             return "";
         }
+    }
+
+    public String childByText(Selector collection, Selector child, String text, boolean allowScrollSearch) {
+        try {
+            android.support.test.uiautomator.UiObject obj = new android.support.test.uiautomator.UiScrollable(collection.toUiSelector()).getChildByText(child.toUiSelector(), text, allowScrollSearch);
+            return addUiObject(obj);
+        } catch (Exception e) {
+            Log.e("childByText error:" + e);
+            return "";
+        }
+    }
+
+    public String childByDescription(Selector collection, Selector child, String text) {
+        try {
+            android.support.test.uiautomator.UiObject obj;
+            if (exist(collection) && objInfo(collection).isScrollable()) {
+                obj = new android.support.test.uiautomator.UiScrollable(collection.toUiSelector()).getChildByDescription(child.toUiSelector(), text);
+            } else {
+                obj = new android.support.test.uiautomator.UiCollection(collection.toUiSelector()).getChildByDescription(child.toUiSelector(), text);
+            }
+            return addUiObject(obj);
+        } catch (Exception e) {
+            Log.e("childByDescription error:" + e);
+            return "";
+        }
+    }
+
+    public String childByDescription(Selector collection, Selector child, String text, boolean allowScrollSearch) {
+        try {
+            android.support.test.uiautomator.UiObject obj = new android.support.test.uiautomator.UiScrollable(collection.toUiSelector()).getChildByDescription(child.toUiSelector(), text, allowScrollSearch);
+            return addUiObject(obj);
+        } catch (Exception e) {
+            Log.e("childByDescription error:" + e);
+            return "";
+        }
+    }
+
+    public String childByInstance(Selector collection, Selector child, int instance) {
+        try {
+            android.support.test.uiautomator.UiObject obj;
+            if (exist(collection) && objInfo(collection).isScrollable()) {
+                obj = new android.support.test.uiautomator.UiScrollable(collection.toUiSelector()).getChildByInstance(child.toUiSelector(), instance);
+            } else {
+                obj = new android.support.test.uiautomator.UiCollection(collection.toUiSelector()).getChildByInstance(child.toUiSelector(), instance);
+            }
+            return addUiObject(obj);
+        } catch (Exception e) {
+            Log.e("childByInstance error:" + e);
+            return "";
+        }
+    }
+
+    public String getChild(String obj, Selector selector) {
+        try {
+            android.support.test.uiautomator.UiObject ui = uiObjects.get(obj);
+            if (ui != null) {
+                return addUiObject(ui.getChild(selector.toUiSelector()));
+            }
+            return "";
+        } catch (Exception e) {
+            Log.e("getChild error:" + e);
+            return "";
+        }
+    }
+
+    public String getFromParent(String obj, Selector selector) {
+        try {
+            android.support.test.uiautomator.UiObject ui = uiObjects.get(obj);
+            if (ui != null) {
+                return addUiObject(ui.getFromParent(selector.toUiSelector()));
+            }
+            return "";
+        } catch (Exception e) {
+            Log.e("getFromParent error:" + e);
+            return "";
+        }
+
+    }
+
+    public String getUiObject(Selector selector) {
+        try {
+            return addUiObject(this.u2UiDevice.findObject(selector.toUiSelector()));
+        } catch (Exception e) {
+            Log.e("getUiObject error:" + e);
+            return "";
+        }
+    }
+
+    public void removeUiObject(String obj) {
+        this.uiObjects.remove(obj);
+    }
+
+    public String[] getUiObjects() {
+        Set<String> strings = this.uiObjects.keySet();
+        return strings.toArray(new String[strings.size()]);
     }
 }

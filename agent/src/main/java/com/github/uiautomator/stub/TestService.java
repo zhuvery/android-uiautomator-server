@@ -465,9 +465,75 @@ public interface TestService {
     @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
     String childByText(Selector collection, Selector child, String text) throws UiObjectNotFoundException;
 
-//    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
-//    String childByText(Selector collection, Selector child, String text, boolean allowScrollSearch) throws UiObjectNotFoundException;
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    String childByText(Selector collection, Selector child, String text, boolean allowScrollSearch) throws UiObjectNotFoundException;
 
+    /**
+     * Searches for child UI element within the constraints of this UiSelector selector. It looks for any child matching the childPattern argument that has a child UI element anywhere within its sub hierarchy that has content-description text. The returned UiObject will point at the childPattern instance that matched the search and not at the identifying child element that matched the content description.
+     *
+     * @param collection Selector of UiCollection or UiScrollable
+     * @param child      UiSelector selector of the child pattern to match and return
+     * @param text       String of the identifying child contents of of the childPattern
+     * @return A string ID represent the returned UiObject.
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    String childByDescription(Selector collection, Selector child, String text) throws UiObjectNotFoundException;
+
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    String childByDescription(Selector collection, Selector child, String text, boolean allowScrollSearch) throws UiObjectNotFoundException;
+
+    /**
+     * Searches for child UI element within the constraints of this UiSelector. It looks for any child matching the childPattern argument that has a child UI element anywhere within its sub hierarchy that is at the instance specified. The operation is performed only on the visible items and no scrolling is performed in this case.
+     *
+     * @param collection Selector of UiCollection or UiScrollable
+     * @param child      UiSelector selector of the child pattern to match and return
+     * @param instance   int the desired matched instance of this childPattern
+     * @return A string ID represent the returned UiObject.
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    String childByInstance(Selector collection, Selector child, int instance) throws UiObjectNotFoundException;
+
+    /**
+     * Creates a new UiObject for a child view that is under the present UiObject.
+     *
+     * @param obj      The ID string represent the parent UiObject.
+     * @param selector UiSelector selector of the child pattern to match and return
+     * @return A string ID represent the returned UiObject.
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    String getChild(String obj, Selector selector) throws UiObjectNotFoundException;
+
+    /**
+     * Creates a new UiObject for a sibling view or a child of the sibling view, relative to the present UiObject.
+     *
+     * @param obj      The ID string represent the source UiObject.
+     * @param selector for a sibling view or children of the sibling view
+     * @return A string ID represent the returned UiObject.
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    String getFromParent(String obj, Selector selector) throws UiObjectNotFoundException;
+
+    /**
+     * Get a new UiObject from the selector.
+     *
+     * @param selector Selector of the UiObject
+     * @return A string ID represent the returned UiObject.
+     * @throws UiObjectNotFoundException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+    String getUiObject(Selector selector) throws UiObjectNotFoundException;
+
+    /**
+     * Remove the UiObject from memory.
+     */
+    void removeUiObject(String obj);
+
+    /**
+     * Get all named UiObjects.
+     *
+     * @return all names
+     */
+    String[] getUiObjects();
 
     void testApi();
 }

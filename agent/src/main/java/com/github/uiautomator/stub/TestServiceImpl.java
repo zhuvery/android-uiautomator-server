@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Set;
 
 
 public class TestServiceImpl implements TestService {
@@ -700,6 +701,96 @@ public class TestServiceImpl implements TestService {
     @Override
     public String childByText(Selector collection, Selector child, String text) throws UiObjectNotFoundException {
         return this.nDevices.childByText(collection, child, text);
+    }
+
+    @Override
+    public String childByText(Selector collection, Selector child, String text, boolean allowScrollSearch) throws UiObjectNotFoundException {
+        return this.nDevices.childByText(collection, child, text, allowScrollSearch);
+    }
+
+    /**
+     * Searches for child UI element within the constraints of this UiSelector selector. It looks for any child matching the childPattern argument that has a child UI element anywhere within its sub hierarchy that has content-description text. The returned UiObject will point at the childPattern instance that matched the search and not at the identifying child element that matched the content description.
+     *
+     * @param collection Selector of UiCollection or UiScrollable
+     * @param child      UiSelector selector of the child pattern to match and return
+     * @param text       String of the identifying child contents of of the childPattern
+     * @return A string ID represent the returned UiObject.
+     */
+    @Override
+    public String childByDescription(Selector collection, Selector child, String text) throws UiObjectNotFoundException {
+        return this.nDevices.childByDescription(collection, child, text);
+    }
+
+    @Override
+    public String childByDescription(Selector collection, Selector child, String text, boolean allowScrollSearch) throws UiObjectNotFoundException {
+        return this.nDevices.childByDescription(collection, child, text, allowScrollSearch);
+    }
+
+    /**
+     * Searches for child UI element within the constraints of this UiSelector. It looks for any child matching the childPattern argument that has a child UI element anywhere within its sub hierarchy that is at the instance specified. The operation is performed only on the visible items and no scrolling is performed in this case.
+     *
+     * @param collection Selector of UiCollection or UiScrollable
+     * @param child      UiSelector selector of the child pattern to match and return
+     * @param instance   int the desired matched instance of this childPattern
+     * @return A string ID represent the returned UiObject.
+     */
+    @Override
+    public String childByInstance(Selector collection, Selector child, int instance) throws UiObjectNotFoundException {
+        return this.nDevices.childByInstance(collection, child, instance);
+    }
+
+    /**
+     * Creates a new UiObject for a child view that is under the present UiObject.
+     *
+     * @param obj      The ID string represent the parent UiObject.
+     * @param selector UiSelector selector of the child pattern to match and return
+     * @return A string ID represent the returned UiObject.
+     */
+    @Override
+    public String getChild(String obj, Selector selector) throws UiObjectNotFoundException {
+        return this.nDevices.getChild(obj, selector);
+    }
+
+    /**
+     * Creates a new UiObject for a sibling view or a child of the sibling view, relative to the present UiObject.
+     *
+     * @param obj      The ID string represent the source UiObject.
+     * @param selector for a sibling view or children of the sibling view
+     * @return A string ID represent the returned UiObject.
+     */
+    @Override
+    public String getFromParent(String obj, Selector selector) throws UiObjectNotFoundException {
+        return this.nDevices.getFromParent(obj, selector);
+    }
+
+    /**
+     * Get a new UiObject from the selector.
+     *
+     * @param selector Selector of the UiObject
+     * @return A string ID represent the returned UiObject.
+     * @throws UiObjectNotFoundException
+     */
+    @Override
+    public String getUiObject(Selector selector) throws UiObjectNotFoundException {
+        return this.nDevices.getUiObject(selector);
+    }
+
+    /**
+     * Remove the UiObject from memory.
+     */
+    @Override
+    public void removeUiObject(String obj) {
+        this.nDevices.removeUiObject(obj);
+    }
+
+    /**
+     * Get all named UiObjects.
+     *
+     * @return all names
+     */
+    @Override
+    public String[] getUiObjects() {
+        return this.nDevices.getUiObjects();
     }
 
     @Override
