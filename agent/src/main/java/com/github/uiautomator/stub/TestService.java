@@ -454,5 +454,20 @@ public interface TestService {
     @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
     boolean scrollTo(Selector obj, Selector targetObj, boolean isVertical) throws UiObjectNotFoundException;
 
+    /**
+     * Searches for child UI element within the constraints of this UiSelector selector. It looks for any child matching the childPattern argument that has a child UI element anywhere within its sub hierarchy that has a text attribute equal to text. The returned UiObject will point at the childPattern instance that matched the search and not at the identifying child element that matched the text attribute.
+     *
+     * @param collection Selector of UiCollection or UiScrollable.
+     * @param text       String of the identifying child contents of of the childPattern
+     * @param child      UiSelector selector of the child pattern to match and return
+     * @return A string ID represent the returned UiObject.
+     */
+//    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+//    String childByText(Selector collection, Selector child, String text) throws UiObjectNotFoundException;
+//
+//    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2)})
+//    String childByText(Selector collection, Selector child, String text, boolean allowScrollSearch) throws UiObjectNotFoundException;
+
+
     void testApi();
 }

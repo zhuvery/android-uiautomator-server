@@ -8,7 +8,6 @@ import android.os.SystemClock;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.github.uiautomator.exceptions.NotImplementedException;
 import com.github.uiautomator.exceptions.UiAutomator2Exception;
@@ -67,48 +66,26 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public String dumpWindowHierarchy(boolean compressed) {
-        return dumpWindowHierarchy(compressed, 50);
-    }
+        return this.nDevices.commonDumpWindowHierarchy(compressed, 50, XMLHierarchy.getCurstomRootAccessibilityNode(), null);
 
-    private String commonDumpWindowHierarchy(boolean compressed, int maxDepth, AccessibilityNodeInfo[] accessibilityNodeInfos, Selector selector) {
-        ReflectionUtils.clearAccessibilityCache();
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try {
-            if (selector == null) {
-                AccessibilityNodeInfoDumper.dumpWindowHierarchy(accessibilityNodeInfos, os, maxDepth);
-            } else {
-                AccessibilityNodeInfoDumper.dumpWindowHierarchy(accessibilityNodeInfos, os, maxDepth, selector);
-            }
-            return os.toString("UTF-8");
-        } catch (Exception e) {
-            Log.d("dumpWindowHierarchy got Exception: " + e);
-            throw new UiAutomator2Exception(e);
-        } finally {
-            try {
-                os.close();
-            } catch (IOException e) {
-                Log.d("dumpWindowHierarchy got Exception: " + e + "but ignore it");
-                // ignore
-            }
-        }
     }
 
     @Override
     public String dumpWindowHierarchyWithSelector(boolean compressed, Selector selector) {
-        return this.commonDumpWindowHierarchy(compressed, 50, XMLHierarchy.getRootAccessibilityNode(), selector);
+        return this.nDevices.commonDumpWindowHierarchy(compressed, 50, XMLHierarchy.getRootAccessibilityNode(), selector);
     }
 
     // 这里是把当前界面所有的树都dump出来了
     @Override
     public String dumpAllWindowHierarchy(boolean compressed) {
         // 默认层数是50层
-        return this.commonDumpWindowHierarchy(compressed, 50, XMLHierarchy.getRootAccessibilityNode(), null);
+        return this.nDevices.commonDumpWindowHierarchy(compressed, 50, XMLHierarchy.getRootAccessibilityNode(), null);
     }
 
 
     @Override
     public String dumpWindowHierarchy(boolean compressed, int maxDepth) {
-        return this.commonDumpWindowHierarchy(compressed, maxDepth, XMLHierarchy.getCurstomRootAccessibilityNode(), null);
+        return this.nDevices.commonDumpWindowHierarchy(compressed, maxDepth, XMLHierarchy.getCurstomRootAccessibilityNode(), null);
     }
 
     /**

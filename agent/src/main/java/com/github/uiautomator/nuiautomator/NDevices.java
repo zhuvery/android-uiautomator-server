@@ -9,6 +9,8 @@ import android.graphics.Rect;
 import android.view.MotionEvent;
 
 
+import com.github.uiautomator.exceptions.UiAutomator2Exception;
+import com.github.uiautomator.stub.AccessibilityNodeInfoDumper;
 import com.github.uiautomator.stub.ObjInfo;
 import com.github.uiautomator.stub.Point;
 import com.github.uiautomator.stub.Selector;
@@ -18,10 +20,13 @@ import com.github.uiautomator.stub.Log;
 import com.github.uiautomator.stub.TouchController;
 import com.github.uiautomator.tools.ReflectionUtils;
 import com.github.uiautomator.tools.AccessibilityNodeInfoHelper;
+import com.github.uiautomator.tools.XMLHierarchy;
 
 import android.support.test.uiautomator.Until;
 import android.support.test.uiautomator.UiSelector;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Objects;
 
 public class NDevices {
@@ -70,6 +75,10 @@ public class NDevices {
         this.lastUiInfo = accessibilityNodeInfo;
     }
 
+    public AccessibilityNodeInfo getLastUiInfo() {
+        return this.lastUiInfo;
+    }
+
     public com.android.uiautomator.core.UiDevice getU1UiDevices() {
         return this.u1UiDevice;
     }
@@ -99,6 +108,7 @@ public class NDevices {
         AccessibilityNodeInfo accessibilityNodeInfo;
         accessibilityNodeInfo = this.queryController.findNodeInRoot(selector.toUiSelector(), this.lastUiInfo);
         if (accessibilityNodeInfo != null) {
+            Log.d("found select in caches uiInfo");
             return accessibilityNodeInfo;
         } else {
             Log.e("accessibilityNodeInfo is null");
@@ -107,10 +117,11 @@ public class NDevices {
     }
 
     public AccessibilityNodeInfo findObject(android.support.test.uiautomator.UiSelector uiSelector) {
-        Log.d("use lastUiInfo to find node");
+        Log.d("use lastUiInfo to find node| uiSelector");
         AccessibilityNodeInfo accessibilityNodeInfo;
         accessibilityNodeInfo = this.queryController.findNodeInRoot(uiSelector, this.lastUiInfo);
         if (accessibilityNodeInfo != null) {
+            Log.d("found select in caches uiInfo");
             return accessibilityNodeInfo;
         } else {
             Log.e("accessibilityNodeInfo is null");
@@ -992,49 +1003,76 @@ public class NDevices {
     }
 
     public boolean scrollTo(Selector obj, Selector targetObj, boolean isVertical) {
-        // todo 对于ui缓存存在的时候从缓存里进行计算这部分逻辑有点复杂，暂时还是才走重新dump的吧，后续在补充
-        try {
-            android.support.test.uiautomator.UiScrollable scrollable = new android.support.test.uiautomator.UiScrollable(obj.toUiSelector());
-            if (isVertical) scrollable.setAsVerticalList();
-            else scrollable.setAsHorizontalList();
-            return scrollable.scrollIntoView(targetObj.toUiSelector());
-        } catch (Exception e) {
-            Log.e("scrollTo error:" + e);
-            return false;
+        if (this.lastUiInfo == null) {
+            try {
+                android.support.test.uiautomator.UiScrollable scrollable = new android.support.test.uiautomator.UiScrollable(obj.toUiSelector());
+                if (isVertical) scrollable.setAsVerticalList();
+                else scrollable.setAsHorizontalList();
+                return scrollable.scrollIntoView(targetObj.toUiSelector());
+            } catch (Exception e) {
+                Log.e("scrollTo error:" + e);
+                return false;
+            }
+        } else {
+            // todo 这里实现其实跟原生是一样的，但会出现用缓存的时候能找到ui而其他方法找不到
+            return this.scrollIntoView(obj, targetObj, isVertical);
         }
+    }
 
-//        if (this.lastUiInfo == null) {
-//            try {
-//                android.support.test.uiautomator.UiScrollable scrollable = new android.support.test.uiautomator.UiScrollable(obj.toUiSelector());
-//                if (isVertical) scrollable.setAsVerticalList();
-//                else scrollable.setAsHorizontalList();
-//                return scrollable.scrollIntoView(targetObj.toUiSelector());
-//            } catch (Exception e) {
-//                Log.e("scrollTo error:" + e);
-//                return false;
-//            }
-//        } else {
-//            android.support.test.uiautomator.UiScrollable scrollable = new android.support.test.uiautomator.UiScrollable(obj.toUiSelector());
-//            if (isVertical) scrollable.setAsVerticalList();
-//            else scrollable.setAsHorizontalList();
-//            android.support.test.uiautomator.UiSelector paramUiSelector = obj.toUiSelector().childSelector(targetObj.toUiSelector());
-//            AccessibilityNodeInfo node = this.findObject(paramUiSelector);
-//            if (node == null) {
-//                int i = 0;
-//                while (i < mMaxSearchSwipes) {
-//                    boolean bool = this.scrollForward();
-//                    if (!exists(paramUiSelector)) {
-//                        if (!bool)
-//                            return false;
-//                        i++;
-//                        continue;
-//                    }
-//                    return true;
-//                }
-//                return false;
-//            } else {
-//                return true;
-//            }
-//        }
+    private boolean scrollIntoView(Selector selector, Selector targetSelector, boolean isVertical) {
+        android.support.test.uiautomator.UiSelector uiSelector = selector.toUiSelector();
+        android.support.test.uiautomator.UiSelector targetUiSelector = uiSelector.childSelector(targetSelector.toUiSelector());
+        if (this.findObject(targetUiSelector) != null) {
+            Log.d("target node already in selector");
+            return true;
+        } else {
+            Log.d("start to scroll to beginning to find target");
+            this.commonDumpWindowHierarchy(true, 50, XMLHierarchy.getCurstomRootAccessibilityNode(), null);
+            this.scrollToBeginning(selector, isVertical, 30, 55);
+            if (this.findObject(targetUiSelector) != null) {
+                Log.d("target node already in selector");
+                return true;
+            } else {
+                int i = 0;
+                while (i < 30) {
+                    boolean bool = this.scrollForward(selector, isVertical, 55);
+                    this.commonDumpWindowHierarchy(true, 50, XMLHierarchy.getCurstomRootAccessibilityNode(), null);
+                    if (this.findObject(targetUiSelector) != null) {
+                        if (!bool)
+                            return false;
+                        i++;
+                    } else {
+                        Log.d("target node already in selector after scrollForward");
+                        return true;
+                    }
+
+                }
+                return false;
+            }
+        }
+    }
+
+
+    public String commonDumpWindowHierarchy(boolean compressed, int maxDepth, AccessibilityNodeInfo[] accessibilityNodeInfos, Selector selector) {
+        ReflectionUtils.clearAccessibilityCache();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try {
+            if (selector == null) {
+                AccessibilityNodeInfoDumper.dumpWindowHierarchy(accessibilityNodeInfos, os, maxDepth);
+            } else {
+                AccessibilityNodeInfoDumper.dumpWindowHierarchy(accessibilityNodeInfos, os, maxDepth, selector);
+            }
+            return os.toString("UTF-8");
+        } catch (Exception e) {
+            Log.d("dumpWindowHierarchy got Exception: " + e);
+            throw new UiAutomator2Exception(e);
+        } finally {
+            try {
+                os.close();
+            } catch (IOException e) {
+                Log.d("dumpWindowHierarchy got Exception: " + e + "but ignore it");
+                // ignore
+            }
+        }
     }
 }
