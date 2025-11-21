@@ -51,6 +51,8 @@ public class AccessibilityNodeInfoDumper {
         for (AccessibilityNodeInfo root : accessibilityNodeInfos) {
             dumpNodeRec(root, serializer, 0, u1UiDevice.getDisplayWidth(), u1UiDevice.getDisplayHeight(), maxDepth);
         }
+        serializer.endTag("", "hierarchy");
+        serializer.endDocument();
     }
 
     public static void dumpWindowHierarchy(AccessibilityNodeInfo[] accessibilityNodeInfos, OutputStream out, int maxDepth, Selector selector) throws UiAutomator2Exception, IOException {
@@ -74,6 +76,8 @@ public class AccessibilityNodeInfoDumper {
             dumpNodeRec(root, serializer, 0, u1UiDevice.getDisplayWidth(), u1UiDevice.getDisplayHeight(), maxDepth);
         }
         NDevices.getInstance().refreshUI(realAccessibilityNodeInfo == null ? accessibilityNodeInfos[0] : realAccessibilityNodeInfo);
+        serializer.endTag("", "hierarchy");
+        serializer.endDocument();
     }
 
     public static void dumpWindowHierarchy(UiDevice device, OutputStream out, int maxDepth) throws IOException {

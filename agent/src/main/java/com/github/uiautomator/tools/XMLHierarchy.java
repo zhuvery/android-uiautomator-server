@@ -39,6 +39,7 @@ public class XMLHierarchy {
         HashSet<AccessibilityNodeInfo> hashSet = new HashSet<>();
         QueryController queryController = NDevices.getInstance().getQueryController();
         AccessibilityNodeInfo accessibilityNodeInfo = queryController.getAccessibilityRootNode();
+        Log.d(String.format("current window: %s", new Object[]{accessibilityNodeInfo.toString()}));
         hashSet.add(accessibilityNodeInfo);
         return hashSet.toArray(new AccessibilityNodeInfo[0]);
     }
