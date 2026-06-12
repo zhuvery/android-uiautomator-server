@@ -536,4 +536,13 @@ public interface TestService {
     String[] getUiObjects();
 
     void testApi();
+
+    int displayWidth();
+
+    int displayHeight();
+
+    String getLastTraversedText();
+
+    void clearLastTraversedText();
+
 }

@@ -794,4 +794,24 @@ public class TestServiceImpl implements TestService {
         Log.d("test api111:" + this.nDevices.getU1UiDevices().getDisplayWidth());
         Log.d("test api222:" + this.nDevices.getU1UiDevices().getDisplayHeight());
     }
+
+    @Override
+    public int displayWidth() {
+        return this.nDevices.getU1UiDevices().getDisplayWidth();
+    }
+
+    @Override
+    public int displayHeight() {
+        return this.nDevices.getU1UiDevices().getDisplayHeight();
+    }
+
+    @Override
+    public String getLastTraversedText() {
+        return this.nDevices.getU2UiDevices().getLastTraversedText();
+    }
+
+    @Override
+    public void clearLastTraversedText() {
+        this.nDevices.getU2UiDevices().clearLastTraversedText();
+    }
 }
