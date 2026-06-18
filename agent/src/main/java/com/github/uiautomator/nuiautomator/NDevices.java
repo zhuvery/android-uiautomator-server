@@ -7,11 +7,13 @@ import android.os.Bundle;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.graphics.Rect;
 import android.view.MotionEvent;
+import android.view.Display;
 
 import com.github.uiautomator.exceptions.UiAutomator2Exception;
 import com.github.uiautomator.stub.AccessibilityNodeInfoDumper;
 import com.github.uiautomator.stub.ObjInfo;
 import com.github.uiautomator.stub.Point;
+import com.github.uiautomator.stub.ReflectWrapper;
 import com.github.uiautomator.stub.Selector;
 import com.github.uiautomator.stub.FakeInstrument;
 import com.github.uiautomator.stub.FakeInstrumentationRegistry;
@@ -26,6 +28,7 @@ import android.support.test.uiautomator.UiSelector;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
@@ -232,6 +235,26 @@ public class NDevices {
             if (parent != null && parent.isScrollable()) return parent;
         }
         return null;
+    }
+
+    private Display getDisplay() {
+        Method method2 = ReflectWrapper.getMethod("android.hardware.display.DisplayManagerGlobal", "getInstance");
+        Method method1 = ReflectWrapper.getMethod("android.hardware.display.DisplayManagerGlobal", "getRealDisplay", new Class[]{int.class});
+        if (method2 != null && method1 != null) {
+            Object object = ReflectWrapper.invoke(method2, (Object) null);
+            if (object != null)
+                return (Display) ReflectWrapper.invoke(method1, object, new Object[]{Integer.valueOf(0)});
+        }
+        return null;
+    }
+
+    public android.graphics.Point getDisplaySize() {
+        Display display = getDisplay();
+        if (display == null)
+            return null;
+        android.graphics.Point point = new android.graphics.Point();
+        display.getRealSize(point);
+        return point;
     }
 
     public Rect getVisibleBounds(AccessibilityNodeInfo node) {
@@ -1071,6 +1094,7 @@ public class NDevices {
             }
         }
     }
+
 
     public String commonDumpWindowHierarchy(boolean compressed, int maxDepth, AccessibilityNodeInfo[] accessibilityNodeInfos, Selector selector) {
         ReflectionUtils.clearAccessibilityCache();

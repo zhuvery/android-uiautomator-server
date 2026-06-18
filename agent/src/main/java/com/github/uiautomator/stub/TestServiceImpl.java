@@ -45,6 +45,30 @@ public class TestServiceImpl implements TestService {
         return true;
     }
 
+    public int displayWidth() {
+        int j = this.nDevices.getU1UiDevices().getDisplayWidth();
+        android.graphics.Point point = this.nDevices.getDisplaySize();
+        int i = j;
+        if (point != null) {
+            i = j;
+            if (j < point.x)
+                i = point.x;
+        }
+        return i;
+    }
+
+    public int displayHeight() {
+        int j = this.nDevices.getU1UiDevices().getDisplayHeight();
+        android.graphics.Point point = this.nDevices.getDisplaySize();
+        int i = j;
+        if (point != null) {
+            i = j;
+            if (j < point.y)
+                i = point.y;
+        }
+        return i;
+    }
+
     @Override
     public String ping() {
         return "pong";
@@ -793,16 +817,6 @@ public class TestServiceImpl implements TestService {
     public void testApi() {
         Log.d("test api111:" + this.nDevices.getU1UiDevices().getDisplayWidth());
         Log.d("test api222:" + this.nDevices.getU1UiDevices().getDisplayHeight());
-    }
-
-    @Override
-    public int displayWidth() {
-        return this.nDevices.getU1UiDevices().getDisplayWidth();
-    }
-
-    @Override
-    public int displayHeight() {
-        return this.nDevices.getU1UiDevices().getDisplayHeight();
     }
 
     @Override
