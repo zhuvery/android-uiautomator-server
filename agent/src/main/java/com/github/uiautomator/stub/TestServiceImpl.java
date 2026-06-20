@@ -46,27 +46,21 @@ public class TestServiceImpl implements TestService {
     }
 
     public int displayWidth() {
-        int j = this.nDevices.getU1UiDevices().getDisplayWidth();
+        int uiWidth = this.nDevices.getU1UiDevices().getDisplayWidth();
         android.graphics.Point point = this.nDevices.getDisplaySize();
-        int i = j;
-        if (point != null) {
-            i = j;
-            if (j < point.x)
-                i = point.x;
+        if (point != null && uiWidth < point.x) {
+            uiWidth = point.x;
         }
-        return i;
+        return uiWidth;
     }
 
     public int displayHeight() {
-        int j = this.nDevices.getU1UiDevices().getDisplayHeight();
+        int uiHeight = this.nDevices.getU1UiDevices().getDisplayHeight();
         android.graphics.Point point = this.nDevices.getDisplaySize();
-        int i = j;
-        if (point != null) {
-            i = j;
-            if (j < point.y)
-                i = point.y;
+        if (point != null && uiHeight < point.y) {
+            uiHeight = point.y;
         }
-        return i;
+        return uiHeight;
     }
 
     @Override
